@@ -159,10 +159,29 @@ class CreditScore:
         
     def modelmetrics_scores(self, predresult):
         
-        pred_accuracy = sum(predresult.predicted == predresult.target)/predresult.shape[0]
-        print('pred_accuracy: %s' %pred_accuracy)
+        ###AUC KS值
         
-        
+        ###在某个概率分界值p下，模型预测的各项准确率
+        metrics_p = pd.DataFrame()
+        for p in [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]:
+            predresult['predicted'] = (predresult.probability > p).astype(int)
+            pred_accuracy = sum(predresult.predicted == predresult.target)/predresult.shape[0]
+    
+            confusion_matrix = pd.DataFrame(metrics.confusion_matrix(predresult['target'], predresult['predicted']), index=['real_negtive', 'real_postive'], columns=['pred_negtive', 'pred_postive'])  
+            confusion_matrix_prob = confusion_matrix.copy()
+            confusion_matrix_prob.iloc[:, 0] = confusion_matrix_prob.iloc[:, 0] / confusion_matrix_prob.iloc[:, 0].sum()
+            confusion_matrix_prob.iloc[:, 1] = confusion_matrix_prob.iloc[:, 1] / confusion_matrix_prob.iloc[:, 1].sum()
+    
+            precision = metrics.precision_score(predresult['target'], predresult['predicted'])
+            recall = metrics.recall_score(predresult['target'], predresult['predicted'])
+            pass_rate = sum(predresult.predicted == 0)/predresult.shape[0]
+
+            temp = pd.DataFrame({'p': p, 'accuracy': pred_accuracy, 'precision': precision,
+                                 'recall': recall, 'pass_rate': pass_rate, 'FalseNegative': confusion_matrix_prob.iloc[1, 0]}, index=[0])
+            temp = temp[['p', 'accuracy', 'precision', 'recall', 'pass_rate', 'FalseNegative']]
+            metrics_p = pd.concat([metrics_p, temp], ignore_index = True)
+
+        print(metrics_p)
         
         
         
