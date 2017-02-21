@@ -160,6 +160,9 @@ class CreditScore:
     def modelmetrics_scores(self, predresult):
         
         ###AUC KS值
+        auc = metrics.roc_auc_score(predresult.target, predresult.probability)
+        print('AUC: %s' %auc)
+                
         
         ###在某个概率分界值p下，模型预测的各项准确率
         metrics_p = pd.DataFrame()
@@ -176,7 +179,7 @@ class CreditScore:
             recall = metrics.recall_score(predresult['target'], predresult['predicted'])
             pass_rate = sum(predresult.predicted == 0)/predresult.shape[0]
 
-            temp = pd.DataFrame({'p': p, 'accuracy': pred_accuracy, 'precision': precision,
+            temp = pd.DataFrame({'p0': p, 'accuracy': pred_accuracy, 'precision': precision,
                                  'recall': recall, 'pass_rate': pass_rate, 'FalseNegative': confusion_matrix_prob.iloc[1, 0]}, index=[0])
             temp = temp[['p', 'accuracy', 'precision', 'recall', 'pass_rate', 'FalseNegative']]
             metrics_p = pd.concat([metrics_p, temp], ignore_index = True)
