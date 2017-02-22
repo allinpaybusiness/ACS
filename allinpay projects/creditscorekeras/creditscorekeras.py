@@ -45,10 +45,10 @@ class CreditScoreKeras(CreditScore):
         
         return probability
     
-    def keras_dnn_trainandtest(self, binn, testsize, cv, feature_sel=None, varthreshold=0):
+    def keras_dnn_trainandtest(self, binn, testsize, cv, feature_sel=None, varthreshold=0, bq=False):
         
         #变量粗分类和woe转化
-        datawoe = self.binandwoe(binn)
+        datawoe = self.binandwoe(binn, bq)
         
         #cross validation 测试
         data_feature = datawoe.ix[:, datawoe.columns != 'default']
@@ -63,10 +63,10 @@ class CreditScoreKeras(CreditScore):
         
         return predresult
      
-    def keras_dnn_trainandtest_kfold(self, binn, nsplit, cv, feature_sel=None, varthreshold=0):
+    def keras_dnn_trainandtest_kfold(self, binn, nsplit, cv, feature_sel=None, varthreshold=0, bq=False):
         
         #变量粗分类和woe转化
-        datawoe = self.binandwoe(binn)
+        datawoe = self.binandwoe(binn, bq)
         
         #cross validation 测试
         data_feature = datawoe.ix[:, datawoe.columns != 'default']

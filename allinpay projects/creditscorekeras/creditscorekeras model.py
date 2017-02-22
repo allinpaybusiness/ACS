@@ -25,33 +25,34 @@ binn = 10
 testsize = 0.25
 nsplit = 5
 cv = 10
+bq = True
 
 #################
 #三，建模并预测
 #################
 #1，不筛选变量的完整模型
 #单次的train and test
-predresult = self.keras_dnn_trainandtest(binn, testsize, cv)
+predresult = self.keras_dnn_trainandtest(binn, testsize, cv, bq=bq)
 
 #K重train and test
-predresult = self.keras_dnn_trainandtest_kfold(binn, nsplit, cv)
+predresult = self.keras_dnn_trainandtest_kfold(binn, nsplit, cv, bq=bq)
 
 #2，VarianceThreshold过滤变量
 feature_sel = "VarianceThreshold"
 varthreshold = 0.2
 #单次的train and test
-predresult = self.keras_dnn_trainandtest(binn, testsize, cv, feature_sel, varthreshold)
+predresult = self.keras_dnn_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq=bq)
 
 #K重train and test
-predresult = self.keras_dnn_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold)
+predresult = self.keras_dnn_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq=bq)
 
 #3，RFECV递归+CV选择变量
 feature_sel = "RFECV"
 #单次的train and test
-predresult = self.keras_dnn_trainandtest(binn, testsize, cv, feature_sel)
+predresult = self.keras_dnn_trainandtest(binn, testsize, cv, feature_sel, bq=bq)
 
 #K重train and test
-predresult = self.keras_dnn_trainandtest_kfold(binn, nsplit, cv, feature_sel)
+predresult = self.keras_dnn_trainandtest_kfold(binn, nsplit, cv, feature_sel, bq=bq)
 
 #################
 #四，模型预测结果评估
