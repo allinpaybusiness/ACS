@@ -54,8 +54,9 @@ class CreditScore:
             self.data['DEBTINC'] = pd.to_numeric(self.data['DEBTINC'], errors='coerce')
             self.data['DEBTINC'] = self.data['DEBTINC'].fillna(self.data['DEBTINC'].mean())
             
-    def binandwoe(self, binn):
+    def binandwoe(self, binn, bq):
         #进行粗分类和woe转换
+        #进行粗分类（bin）时，bq=True对连续变量等分位数分段，bp=False对连续变量等宽分段
         datawoe = self.data.copy()
         
         for col in datawoe.columns:
@@ -75,10 +76,13 @@ class CreditScore:
                     datawoe[col] = datawoe[col].replace({cat:woei})            
             else:
                 #对连续特征粗分类
-                minvalue = datawoe[col].min()
-                maxvalue = datawoe[col].max()
-                breakpoints = np.arange(minvalue, maxvalue, (maxvalue-minvalue)/binn)
-                breakpoints = np.append(breakpoints, maxvalue)
+                if bq == True:
+                    breakpoints = np.unique(np.percentile(datawoe[col],range(0,110,10)))
+                else:
+                    minvalue = datawoe[col].min()
+                    maxvalue = datawoe[col].max()
+                    breakpoints = np.arange(minvalue, maxvalue, (maxvalue-minvalue)/binn) 
+                    breakpoints = np.append(breakpoints, maxvalue)
                 labels = np.arange(len(breakpoints) - 1)
                 datawoe[col] = pd.cut(datawoe[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
                 datawoe[col] = datawoe[col].astype('int64')
@@ -93,7 +97,7 @@ class CreditScore:
                     datawoe[col] = datawoe[col].replace({cat:woei}) 
                     
         return datawoe
-            
+          
     def categoricalwoe(self):
         #进行粗分类和woe转换
         datawoe = self.data.copy()
