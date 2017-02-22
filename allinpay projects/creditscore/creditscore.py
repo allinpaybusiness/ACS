@@ -7,6 +7,7 @@ This is a temporary script file.
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn import metrics
 from sklearn import preprocessing
 
@@ -140,10 +141,11 @@ class CreditScore:
        
     def modelmetrics_binary(self, predresult):
         
-        
+        #准确率
         scores = metrics.accuracy_score(predresult['target'], predresult['predicted'])          
         print('cross_validation scores: %s' %scores)         
         
+        #混合概率矩阵
         confusion_matrix = pd.DataFrame(metrics.confusion_matrix(predresult['target'], predresult['predicted']), index=['real_negtive', 'real_postive'], columns=['pred_negtive', 'pred_postive'])  
         confusion_matrix_prob = confusion_matrix.copy()
         confusion_matrix_prob.iloc[:, 0] = confusion_matrix_prob.iloc[:, 0] / confusion_matrix_prob.iloc[:, 0].sum()
@@ -152,6 +154,7 @@ class CreditScore:
         print(confusion_matrix)     
         print(confusion_matrix_prob) 
         
+        #精确度和召回率
         precision = metrics.precision_score(predresult['target'], predresult['predicted'])
         recall = metrics.recall_score(predresult['target'], predresult['predicted'])
         print('precision scores: %s' %precision)
@@ -181,10 +184,27 @@ class CreditScore:
 
             temp = pd.DataFrame({'p0': p, 'accuracy': pred_accuracy, 'precision': precision,
                                  'recall': recall, 'pass_rate': pass_rate, 'FalseNegative': confusion_matrix_prob.iloc[1, 0]}, index=[0])
-            temp = temp[['p', 'accuracy', 'precision', 'recall', 'pass_rate', 'FalseNegative']]
+            temp = temp[['p0', 'accuracy', 'precision', 'recall', 'pass_rate', 'FalseNegative']]
             metrics_p = pd.concat([metrics_p, temp], ignore_index = True)
-
+            
         print(metrics_p)
+        
+        ###画出ROC曲线
+        fpr, tpr, _ = metrics.roc_curve(predresult.target, predresult.probability)
+        plt.figure()
+        lw = 2
+        plt.plot(fpr, tpr, color='darkorange',
+                 lw=lw, label='ROC curve (area = %0.2f)' % auc)
+        plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver operating characteristic example')
+        plt.legend(loc="lower right")
+        plt.show()
+
+        
         
         
         
