@@ -23,13 +23,16 @@ from keras.optimizers import SGD
 
 class CreditScoreKeras(CreditScore):
     
-    def dnn_model(self, X_train, y_train, X_test):
+    def dnn_model(self, X_train, y_train, X_test, nepoch, batches):
         #建立DNN模型
         model = Sequential()
-        model.add(Dense(16, input_dim=X_train.shape[1], init='uniform'))
+        model.add(Dense(32, input_dim=X_train.shape[1], init='uniform'))
         model.add(Activation('relu'))
         #model.add(Dropout(0.5))
-        model.add(Dense(16, init='uniform'))
+        model.add(Dense(32, init='uniform'))
+        model.add(Activation('relu'))
+        #model.add(Dropout(0.5))
+        model.add(Dense(32, init='uniform'))
         model.add(Activation('relu'))
         #model.add(Dropout(0.5))
         model.add(Dense(1, init='uniform'))
@@ -38,14 +41,14 @@ class CreditScoreKeras(CreditScore):
         model.compile(loss='binary_crossentropy', optimizer='rmsprop')
             
         #训练模型
-        model.fit(X_train.values, y_train.values, nb_epoch=10, batch_size=500) 
+        model.fit(X_train.values, y_train.values, nb_epoch=nepoch, batch_size=int(X_train.shape[0]/batches)) 
         
         #预测
         probability = model.predict_proba(X_test.values)
         
         return probability
     
-    def keras_dnn_trainandtest(self, binn, testsize, cv, feature_sel=None, varthreshold=0, bq=False):
+    def keras_dnn_trainandtest(self, binn, testsize, cv, feature_sel=None, varthreshold=0, bq=False, nepoch=10, batches=5):
         
         #变量粗分类和woe转化
         datawoe = self.binandwoe(binn, bq)
@@ -57,13 +60,13 @@ class CreditScoreKeras(CreditScore):
         #分割数据集为训练集和测试集
         X_train, X_test, y_train, y_test = train_test_split(data_feature, data_target, test_size=testsize, random_state=0)
 
-        probability = self.dnn_model(X_train, y_train, X_test)
+        probability = self.dnn_model(X_train, y_train, X_test, nepoch, batches)
         
         predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,0]})
         
         return predresult
      
-    def keras_dnn_trainandtest_kfold(self, binn, nsplit, cv, feature_sel=None, varthreshold=0, bq=False):
+    def keras_dnn_trainandtest_kfold(self, binn, nsplit, cv, feature_sel=None, varthreshold=0, bq=False, nepoch=10, batches=5):
         
         #变量粗分类和woe转化
         datawoe = self.binandwoe(binn, bq)
@@ -84,7 +87,7 @@ class CreditScoreKeras(CreditScore):
                 continue
             
             #训练并预测模型
-            probability = self.dnn_model(X_train, y_train, X_test)
+            probability = self.dnn_model(X_train, y_train, X_test, nepoch, batches)
             
             temp = pd.DataFrame({'target' : y_test, 'probability' : probability[:,0]})
             predresult = pd.concat([predresult, temp], ignore_index = True)

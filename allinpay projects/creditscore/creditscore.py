@@ -78,6 +78,8 @@ class CreditScore:
                 #对连续特征粗分类
                 if bq == True:
                     breakpoints = np.unique(np.percentile(datawoe[col],range(0,110,10)))
+                    if len(breakpoints) == 2:
+                        breakpoints = np.array([breakpoints[0], np.mean(breakpoints), breakpoints[1]])
                 else:
                     minvalue = datawoe[col].min()
                     maxvalue = datawoe[col].max()
