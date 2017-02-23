@@ -7,6 +7,7 @@ This is a temporary script file.
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn import metrics
 from sklearn import preprocessing
 
@@ -53,8 +54,9 @@ class CreditScore:
             self.data['DEBTINC'] = pd.to_numeric(self.data['DEBTINC'], errors='coerce')
             self.data['DEBTINC'] = self.data['DEBTINC'].fillna(self.data['DEBTINC'].mean())
             
-    def binandwoe(self, binn):
+    def binandwoe(self, binn, bq):
         #进行粗分类和woe转换
+        #进行粗分类（bin）时，bq=True对连续变量等分位数分段，bp=False对连续变量等宽分段
         datawoe = self.data.copy()
         
         for col in datawoe.columns:
@@ -74,10 +76,15 @@ class CreditScore:
                     datawoe[col] = datawoe[col].replace({cat:woei})            
             else:
                 #对连续特征粗分类
-                minvalue = datawoe[col].min()
-                maxvalue = datawoe[col].max()
-                breakpoints = np.arange(minvalue, maxvalue, (maxvalue-minvalue)/binn)
-                breakpoints = np.append(breakpoints, maxvalue)
+                if bq == True:
+                    breakpoints = np.unique(np.percentile(datawoe[col],range(0,110,10)))
+                    if len(breakpoints) == 2:
+                        breakpoints = np.array([breakpoints[0], np.mean(breakpoints), breakpoints[1]])
+                else:
+                    minvalue = datawoe[col].min()
+                    maxvalue = datawoe[col].max()
+                    breakpoints = np.arange(minvalue, maxvalue, (maxvalue-minvalue)/binn) 
+                    breakpoints = np.append(breakpoints, maxvalue)
                 labels = np.arange(len(breakpoints) - 1)
                 datawoe[col] = pd.cut(datawoe[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
                 datawoe[col] = datawoe[col].astype('int64')
@@ -92,7 +99,7 @@ class CreditScore:
                     datawoe[col] = datawoe[col].replace({cat:woei}) 
                     
         return datawoe
-            
+          
     def categoricalwoe(self):
         #进行粗分类和woe转换
         datawoe = self.data.copy()
@@ -140,10 +147,11 @@ class CreditScore:
        
     def modelmetrics_binary(self, predresult):
         
-        
+        #准确率
         scores = metrics.accuracy_score(predresult['target'], predresult['predicted'])          
         print('cross_validation scores: %s' %scores)         
         
+        #混合概率矩阵
         confusion_matrix = pd.DataFrame(metrics.confusion_matrix(predresult['target'], predresult['predicted']), index=['real_negtive', 'real_postive'], columns=['pred_negtive', 'pred_postive'])  
         confusion_matrix_prob = confusion_matrix.copy()
         confusion_matrix_prob.iloc[:, 0] = confusion_matrix_prob.iloc[:, 0] / confusion_matrix_prob.iloc[:, 0].sum()
@@ -152,6 +160,7 @@ class CreditScore:
         print(confusion_matrix)     
         print(confusion_matrix_prob) 
         
+        #精确度和召回率
         precision = metrics.precision_score(predresult['target'], predresult['predicted'])
         recall = metrics.recall_score(predresult['target'], predresult['predicted'])
         print('precision scores: %s' %precision)
@@ -160,6 +169,9 @@ class CreditScore:
     def modelmetrics_scores(self, predresult):
         
         ###AUC KS值
+        auc = metrics.roc_auc_score(predresult.target, predresult.probability)
+        print('AUC: %s' %auc)
+                
         
         ###在某个概率分界值p下，模型预测的各项准确率
         metrics_p = pd.DataFrame()
@@ -176,12 +188,29 @@ class CreditScore:
             recall = metrics.recall_score(predresult['target'], predresult['predicted'])
             pass_rate = sum(predresult.predicted == 0)/predresult.shape[0]
 
-            temp = pd.DataFrame({'p': p, 'accuracy': pred_accuracy, 'precision': precision,
+            temp = pd.DataFrame({'p0': p, 'accuracy': pred_accuracy, 'precision': precision,
                                  'recall': recall, 'pass_rate': pass_rate, 'FalseNegative': confusion_matrix_prob.iloc[1, 0]}, index=[0])
-            temp = temp[['p', 'accuracy', 'precision', 'recall', 'pass_rate', 'FalseNegative']]
+            temp = temp[['p0', 'accuracy', 'precision', 'recall', 'pass_rate', 'FalseNegative']]
             metrics_p = pd.concat([metrics_p, temp], ignore_index = True)
-
+            
         print(metrics_p)
+        
+        ###画出ROC曲线
+        fpr, tpr, _ = metrics.roc_curve(predresult.target, predresult.probability)
+        plt.figure()
+        lw = 2
+        plt.plot(fpr, tpr, color='darkorange',
+                 lw=lw, label='ROC curve (area = %0.2f)' % auc)
+        plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver operating characteristic example')
+        plt.legend(loc="lower right")
+        plt.show()
+
+        
         
         
         
