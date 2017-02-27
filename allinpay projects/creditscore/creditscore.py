@@ -8,6 +8,7 @@ This is a temporary script file.
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import scipy.stats as ss
 from sklearn import metrics
 from sklearn import preprocessing
 
@@ -173,6 +174,12 @@ class CreditScore:
         print('AUC: %s' %auc)
                 
         
+        ##### KS值
+        G = predresult.ix[predresult.target == 0, 'probability']
+        B = predresult.ix[predresult.target == 1, 'probability']
+        ks,d = ss.ks_2samp(G,B)
+        print('ks: %s  d:%s' %(ks,d))
+        
         ###在某个概率分界值p下，模型预测的各项准确率
         metrics_p = pd.DataFrame()
         for p in [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]:
@@ -207,6 +214,27 @@ class CreditScore:
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
         plt.title('Receiver operating characteristic example')
+        plt.legend(loc="lower right")
+        plt.show()
+        
+        ###画出KS曲线
+        data1 = np.sort(G)
+        data2 = np.sort(B)
+        n1 = data1.shape[0]
+        n2 = data2.shape[0]
+        data_all = np.sort(np.concatenate([data1, data2]))
+          
+        cdf1 = np.searchsorted(data1, data_all, side='right') / (1.0*n1)
+        cdf2 = np.searchsorted(data2, data_all, side='right') / (1.0*n2)
+        plt.figure()
+    
+        plt.plot(data_all,cdf1, color='darkorange',lw=2)
+        plt.plot(data_all,cdf2, color='red')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('VALUE')
+        plt.ylabel('STATS')
+        plt.title('KS-CURVE characteristic example')
         plt.legend(loc="lower right")
         plt.show()
 
