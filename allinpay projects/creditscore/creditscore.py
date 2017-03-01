@@ -233,7 +233,7 @@ class CreditScore:
         cdf2 = np.searchsorted(data2, data_all, side='right') / (1.0*n2)
         plt.figure()
     
-        plt.plot(data_all,cdf1, color='darkorange',lw=2)
+        plt.plot(data_all,cdf1, color='darkorange',lw=2, label='KS: %0.2f)' % ks)
         plt.plot(data_all,cdf2, color='red')
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.05])
