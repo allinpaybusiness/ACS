@@ -15,8 +15,8 @@ from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
 #################
 
 #dataname = 'HMEQ'
-dataname = 'german'
-#dataname = 'taiwancredit'
+#dataname = 'german'
+dataname = 'taiwancredit'
 
 logisticmodel = CreditScoreLogistic(dataname)
 self = logisticmodel
@@ -39,7 +39,7 @@ cv = 10
 bq = True
 
 #逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
-op = 'liblinear'
+op = 'sag'
 
 #################
 #三，建模并预测
@@ -74,6 +74,8 @@ predresult = self.logistic_trainandtest(binn, testsize, cv, feature_sel, bq=bq)
 
 # 暴力测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
 predresult = self.looplogistic_trainandtest_kfold(nsplit, cv, feature_sel, bq=bq ,op=op)
+
+predresult = self.looplogistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel, bq=bq ,op=op)
     
 predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, bq=bq)
 
