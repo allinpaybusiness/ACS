@@ -58,7 +58,7 @@ class CreditScoreLogistic(CreditScore):
         
         return predresult
         
-    def logistic_trainandtest_kfold(self, binn, nsplit, cv, feature_sel=None, varthreshold=0, bq=False ,op='liblinear'):
+    def logistic_trainandtest_kfold(self, binn, nsplit, cv, feature_sel=None, varthreshold=0, bq=False):
         
         #变量粗分类和woe转化
         
