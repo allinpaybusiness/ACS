@@ -54,6 +54,11 @@ class CreditScore:
             self.data['CLNO'] = self.data['DEROG'].fillna(self.data['CLNO'].mean())            
             self.data['DEBTINC'] = pd.to_numeric(self.data['DEBTINC'], errors='coerce')
             self.data['DEBTINC'] = self.data['DEBTINC'].fillna(self.data['DEBTINC'].mean())
+
+        if self.dataname == 'taiwancredit':
+            self.data = pd.read_csv('raw data\\credit scoring\\taiwancredit.csv')
+            self.data = self.data.rename(columns = {'default payment next month':'default'})
+            
             
     def binandwoe(self, binn, bq):
         #进行粗分类和woe转换

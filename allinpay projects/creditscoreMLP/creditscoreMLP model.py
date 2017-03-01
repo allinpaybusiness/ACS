@@ -15,6 +15,7 @@ from creditscoreMLP.creditscoreMLP import CreditScoreMLP
 #################
 dataname = 'HMEQ'
 #dataname = 'german'
+#dataname = 'taiwancredit'
 MLPmodel = CreditScoreMLP(dataname)
 self = MLPmodel
 

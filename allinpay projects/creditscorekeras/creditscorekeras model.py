@@ -15,6 +15,7 @@ from creditscorekeras.creditscorekeras import CreditScoreKeras
 #################
 dataname = 'HMEQ'
 #dataname = 'german'
+#dataname = 'taiwancredit'
 kerasmodel = CreditScoreKeras(dataname)
 self = kerasmodel
 
