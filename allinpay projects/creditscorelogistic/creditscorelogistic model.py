@@ -13,19 +13,30 @@ from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
 ##################
 #一，初始化模型数据
 #################
-dataname = 'HMEQ'
-#dataname = 'german'
+#dataname = 'HMEQ'
+dataname = 'german'
 logisticmodel = CreditScoreLogistic(dataname)
 self = logisticmodel
 
 #################
 #二，设置模型参数
 #################
+# WOE 分割数等份
 binn = 10
+# 测试样本大小
 testsize = 0.25
+
+#交叉检验法分割数量
 nsplit = 5
+
+# 变量删选分割数量
 cv = 10
+
+#进行粗分类（bin）时，bq=True对连续变量等分位数分段，bp=False对连续变量等宽分段
 bq = True
+
+#逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
+op = 'liblinear'
 
 #################
 #三，建模并预测
@@ -49,9 +60,18 @@ predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, var
 #3，RFECV递归+CV选择变量
 feature_sel = "RFECV"
 #单次的train and test
+
+# 暴力测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
+predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel, bq=bq)
+    
+# 传入binn
 predresult = self.logistic_trainandtest(binn, testsize, cv, feature_sel, bq=bq)
 
 #K重train and test
+
+# 暴力测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
+predresult = self.looplogistic_trainandtest_kfold(nsplit, cv, feature_sel, bq=bq ,op=op)
+    
 predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, bq=bq)
 
 #################
