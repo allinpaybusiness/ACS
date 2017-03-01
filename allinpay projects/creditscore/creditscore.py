@@ -58,7 +58,10 @@ class CreditScore:
         if self.dataname == 'taiwancredit':
             self.data = pd.read_csv('raw data\\credit scoring\\taiwancredit.csv')
             self.data = self.data.rename(columns = {'default payment next month':'default'})
-            
+            #sex education marriage 转化为字符变量
+            self.data['SEX'] = self.data['SEX'].astype('str')
+            self.data['EDUCATION'] = self.data['EDUCATION'].astype('str')
+            self.data['MARRIAGE'] = self.data['MARRIAGE'].astype('str')
             
     def binandwoe(self, binn, bq):
         #进行粗分类和woe转换
