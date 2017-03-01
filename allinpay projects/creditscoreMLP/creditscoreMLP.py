@@ -48,11 +48,16 @@ class CreditScoreMLP(CreditScore):
 
         #训练并预测模型
         classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, random_state=1)  # 使用类，参数全是默认的
-        classifier.fit(X_train, y_train)  
-        #predicted = classifier.predict(X_test)
-        probability = classifier.predict_proba(X_test)
+        #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
+        probability = 0
+        for i in range(10):
+            #训练模型
+            classifier.fit(X_train, y_train)  
+            #预测概率
+            probability += classifier.predict_proba(X_test)[:,1]
+        probability = probability / 10
         
-        predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
+        predresult = pd.DataFrame({'target' : y_test, 'probability' : probability})
         
         return predresult
      
@@ -92,11 +97,16 @@ class CreditScoreMLP(CreditScore):
             
             #训练并预测模型
             classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, random_state=1)  # 使用类，参数全是默认的
-            classifier.fit(X_train, y_train)  
-            #predicted = classifier.predict(X_test)
-            probability = classifier.predict_proba(X_test)
+            #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
+            probability = 0
+            for i in range(10):
+                #训练模型
+                classifier.fit(X_train, y_train)  
+                #预测概率
+                probability += classifier.predict_proba(X_test)[:,1]
+            probability = probability / 10
             
-            temp = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
+            temp = pd.DataFrame({'target' : y_test, 'probability' : probability})
             predresult = pd.concat([predresult, temp], ignore_index = True)
             
         return predresult

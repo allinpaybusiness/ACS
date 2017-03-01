@@ -15,6 +15,7 @@ from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
 #################
 dataname = 'HMEQ'
 #dataname = 'german'
+#dataname = 'taiwancredit'
 logisticmodel = CreditScoreLogistic(dataname)
 self = logisticmodel
 
