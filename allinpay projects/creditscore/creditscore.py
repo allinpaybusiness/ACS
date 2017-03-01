@@ -287,41 +287,7 @@ class CreditScore:
         
         return auc, ks, metrics_p
         
-        ###画出ROC曲线
-        # fpr, tpr, _ = metrics.roc_curve(predresult.target, predresult.probability)
-        # plt.figure()
-        # lw = 2
-        # plt.plot(fpr, tpr, color='darkorange',
-        #         lw=lw, label='ROC curve (area = %0.2f)' % auc)
-        #plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-        #plt.xlim([0.0, 1.0])
-        #plt.ylim([0.0, 1.05])
-        #plt.xlabel('False Positive Rate')
-        #plt.ylabel('True Positive Rate')
-        #plt.title('Receiver operating characteristic example')
-        #plt.legend(loc="lower right")
-        #plt.show()
-        
-        ###画出KS曲线
-        #data1 = np.sort(G)
-        #data2 = np.sort(B)
-        #n1 = data1.shape[0]
-        #n2 = data2.shape[0]
-        #data_all = np.sort(np.concatenate([data1, data2]))
-          
-        #cdf1 = np.searchsorted(data1, data_all, side='right') / (1.0*n1)
-        #cdf2 = np.searchsorted(data2, data_all, side='right') / (1.0*n2)
-        #plt.figure()
-    
-        #plt.plot(data_all,cdf1, color='darkorange',lw=2)
-        #plt.plot(data_all,cdf2, color='red')
-        #plt.xlim([0.0, 1.0])
-        #plt.ylim([0.0, 1.05])
-        #plt.xlabel('VALUE')
-        #plt.ylabel('STATS')
-        #plt.title('KS-CURVE characteristic example')
-        #plt.legend(loc="lower right")
-        #plt.show()
+
         
          
 
