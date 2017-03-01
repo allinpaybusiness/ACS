@@ -13,8 +13,11 @@ from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
 ##################
 #一，初始化模型数据
 #################
+
 #dataname = 'HMEQ'
 dataname = 'german'
+#dataname = 'taiwancredit'
+
 logisticmodel = CreditScoreLogistic(dataname)
 self = logisticmodel
 

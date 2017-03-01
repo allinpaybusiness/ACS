@@ -55,6 +55,14 @@ class CreditScore:
             self.data['CLNO'] = self.data['DEROG'].fillna(self.data['CLNO'].mean())            
             self.data['DEBTINC'] = pd.to_numeric(self.data['DEBTINC'], errors='coerce')
             self.data['DEBTINC'] = self.data['DEBTINC'].fillna(self.data['DEBTINC'].mean())
+
+        if self.dataname == 'taiwancredit':
+            self.data = pd.read_csv('raw data\\credit scoring\\taiwancredit.csv')
+            self.data = self.data.rename(columns = {'default payment next month':'default'})
+            #sex education marriage 转化为字符变量
+            self.data['SEX'] = self.data['SEX'].astype('str')
+            self.data['EDUCATION'] = self.data['EDUCATION'].astype('str')
+            self.data['MARRIAGE'] = self.data['MARRIAGE'].astype('str')
             
     def binandwoe(self, binn, bq):
         #进行粗分类和woe转换
@@ -232,7 +240,7 @@ class CreditScore:
         cdf2 = np.searchsorted(data2, data_all, side='right') / (1.0*n2)
         plt.figure()
     
-        plt.plot(data_all,cdf1, color='darkorange',lw=2)
+        plt.plot(data_all,cdf1, color='darkorange',lw=2, label='KS: %0.2f)' % ks)
         plt.plot(data_all,cdf2, color='red')
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.05])
