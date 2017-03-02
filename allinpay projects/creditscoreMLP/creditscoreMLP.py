@@ -20,7 +20,7 @@ from sklearn.neural_network import MLPRegressor
 
 class CreditScoreMLP(CreditScore):
     
-    def MLP_trainandtest(self, binn, testsize, cv, feature_sel, varthreshold, bq, *hidden_layer_sizes):
+    def MLP_trainandtest(self, binn, testsize, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes):
         
         #变量粗分类和woe转化
         datawoe = self.binandwoe(binn, bq)
@@ -47,7 +47,7 @@ class CreditScoreMLP(CreditScore):
         X_train, X_test, y_train, y_test = train_test_split(data_feature_sel, data_target, test_size=testsize, random_state=0)
 
         #训练并预测模型
-        classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, random_state=1)  # 使用类，参数全是默认的
+        classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
         #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
         probability = 0
         for i in range(10):
@@ -61,7 +61,7 @@ class CreditScoreMLP(CreditScore):
         
         return predresult
      
-    def MLP_trainandtest_kfold(self, binn, nsplit, cv, feature_sel, varthreshold, bq, *hidden_layer_sizes):
+    def MLP_trainandtest_kfold(self, binn, nsplit, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes):
         
         #变量粗分类和woe转化
         datawoe = self.binandwoe(binn, bq)
@@ -96,7 +96,7 @@ class CreditScoreMLP(CreditScore):
                 continue
             
             #训练并预测模型
-            classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, random_state=1)  # 使用类，参数全是默认的
+            classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
             #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
             probability = 0
             for i in range(10):
