@@ -106,8 +106,10 @@ class CreditScoreLogistic(CreditScore):
         
     def looplogistic_trainandtest(self, testsize, cv, feature_sel=None, varthreshold=0, bq=False):
         df = pd.DataFrame()
-        for i in range (3 , 101):
-            predresult = self.logistic_trainandtest(i, testsize, cv, feature_sel, bq=bq)
+        for i in range (3 , 101):#对bin做循环
+            #分割train test做测试
+            predresult = self.logistic_trainandtest(i, testsize, cv, feature_sel, varthreshold, bq)
+            #评估并保存测试结果
             auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
             temp = pd.DataFrame({'bin' : i, 'auc_value' : auc ,'ks_value' :ks ,'p0=0.5' :metrics_p['accuracy'][5]} ,index=[0])
             df = pd.concat([df, temp], ignore_index = False)
@@ -115,21 +117,25 @@ class CreditScoreLogistic(CreditScore):
         time0 = time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))
         df.to_csv(time0+'.csv',index=False,sep=',') 
         
-    def looplogistic_trainandtest_kfold(self, nsplit, cv, feature_sel=None, varthreshold=0, bq=False ,op='liblinear'):
+    def looplogistic_trainandtest_kfold(self, nsplit, cv, feature_sel=None, varthreshold=0, bq=False):
          df = pd.DataFrame()
-         for i in range (3 , 101):
-             predresult = self.logistic_trainandtest_kfold(i, nsplit, cv, feature_sel, bq=bq ,op=op)
+         for i in range (3 , 101):#对bin做循环
+             #做cross validation测试
+             predresult = self.logistic_trainandtest_kfold(i, nsplit, cv, feature_sel, varthreshold, bq)
+             #评估并保存测试结果
              auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
              temp = pd.DataFrame({'bin' : i, 'auc_value' : auc ,'ks_value' :ks,'p0=0.5,accuracy' :metrics_p['accuracy'][5]} ,index=[0])
              df = pd.concat([df, temp], ignore_index = True)
              print(' num %s complete' %i)
          time0 = time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))
-         df.to_csv(time0+'-kfold-'+op+'-'+self.dataname+'.csv',index=False,sep=',')  
+         df.to_csv(time0+'-kfold-'+'-'+self.dataname+'.csv',index=False,sep=',')  
         
     def looplogistic_trainandtest_kfold_LRCV(self, nsplit, cv, feature_sel=None, varthreshold=0, bq=False ,op='liblinear'):
          df = pd.DataFrame()
-         for i in range (3 , 101):
-             predresult = self.logistic_trainandtest_kfold_LRCV(i, nsplit, cv, feature_sel, bq=bq ,op=op)
+         for i in range (3 , 101):#对bin做循环
+             #做cross validation cv测试
+             predresult = self.logistic_trainandtest_kfold_LRCV(i, nsplit, cv, feature_sel, varthreshold, bq=bq ,op=op)
+             #评估并保存测试结果
              auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
              temp = pd.DataFrame({'bin' : i, 'auc_value' : auc ,'ks_value' :ks,'p0=0.5,accuracy' :metrics_p['accuracy'][5]} ,index=[0])
              df = pd.concat([df, temp], ignore_index = True)
