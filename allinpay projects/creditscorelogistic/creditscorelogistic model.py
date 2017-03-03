@@ -39,7 +39,7 @@ cv = 10
 bq = True
 
 #逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
-op = 'sag'
+op = 'liblinear'
 
 #################
 #三，建模并预测
