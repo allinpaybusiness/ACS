@@ -25,6 +25,8 @@ self = MLPmodel
 binn = 10
 testsize = 0.25
 hidden_layer_sizes = (64,)
+#hidden_layer_sizes = (64,32,)
+alpha = 0.0001
 nsplit = 5
 cv = 10
 varthreshold = 0.2
@@ -36,26 +38,26 @@ bq = True
 #1，不筛选变量的完整模型
 feature_sel = 'origin'
 #单次的train and test
-predresult = self.MLP_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq, *hidden_layer_sizes)
+predresult = self.MLP_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes)
 
 #K重train and test
-predresult = self.MLP_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq, *hidden_layer_sizes)
+predresult = self.MLP_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes)
 
 #2，VarianceThreshold过滤变量
 feature_sel = "VarianceThreshold"
 #单次的train and test
-predresult = self.MLP_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq, *hidden_layer_sizes)
+predresult = self.MLP_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes)
 
 #K重train and test
-predresult = self.MLP_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq, *hidden_layer_sizes)
+predresult = self.MLP_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes)
 
 #3，RFECV递归+CV选择变量
 feature_sel = "RFECV"
 #单次的train and test
-predresult = self.MLP_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq, *hidden_layer_sizes)
+predresult = self.MLP_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes)
 
 #K重train and test
-predresult = self.MLP_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq, *hidden_layer_sizes)
+predresult = self.MLP_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes)
 
 #################
 #四，模型预测结果评估

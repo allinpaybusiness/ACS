@@ -63,6 +63,28 @@ class CreditScore:
             self.data['SEX'] = self.data['SEX'].astype('str')
             self.data['EDUCATION'] = self.data['EDUCATION'].astype('str')
             self.data['MARRIAGE'] = self.data['MARRIAGE'].astype('str')
+
+    def categoricalwoe(self):
+        #进行粗分类和woe转换
+        datawoe = self.data.copy()
+        
+        for col in datawoe.columns:
+            
+            if col == 'default':
+                continue
+            
+            #首先判断是否是名义变量
+            if datawoe[col].dtype == 'O':
+                for cat in datawoe[col].unique():
+                    #计算单个分类的woe
+                    nob = max(1, sum((datawoe.default == 1) & (datawoe[col] == cat)))
+                    tnob = sum(datawoe.default == 1)
+                    nog = max(1, sum((datawoe.default == 0) & (datawoe[col] == cat)))
+                    tnog = sum(datawoe.default == 0)
+                    woei = np.log((nob/tnob)/(nog/tnog))
+                    datawoe[col] = datawoe[col].replace({cat:woei})            
+                    
+        return datawoe
             
     def binandwoe(self, binn, bq):
         #进行粗分类和woe转换
@@ -112,29 +134,63 @@ class CreditScore:
                     datawoe[col] = datawoe[col].replace({cat:woei}) 
                     
         return datawoe
-          
-    def categoricalwoe(self):
+             
+    def binandwoe_traintest(self, X_train, y_train, X_test, binn, bq):
         #进行粗分类和woe转换
-        datawoe = self.data.copy()
+        #进行粗分类（bin）时，bq=True对连续变量等分位数分段，bp=False对连续变量等宽分段
+        #先对X_train进行粗分类和woe转换，然后根据X_train的分类结果对X_test进行粗分类和woe转换
+        X_train = X_train.copy()
+        X_test = X_test.copy()
         
-        for col in datawoe.columns:
+        for col in X_train.columns:
             
             if col == 'default':
                 continue
             
-            #首先判断是否是名义变量
-            if datawoe[col].dtype == 'O':
-                for cat in datawoe[col].unique():
-                    #计算单个分类的woe
-                    nob = max(1, sum((datawoe.default == 1) & (datawoe[col] == cat)))
-                    tnob = sum(datawoe.default == 1)
-                    nog = max(1, sum((datawoe.default == 0) & (datawoe[col] == cat)))
-                    tnog = sum(datawoe.default == 0)
-                    woei = np.log((nob/tnob)/(nog/tnog))
-                    datawoe[col] = datawoe[col].replace({cat:woei})            
-                    
-        return datawoe
+            #对连续特征粗分类
+            if X_train[col].dtype != 'O':
+                #按等分位数还是等宽分类
+                if bq == True:
+                    arrayA = np.arange(0,100,100/binn)
+                    arrayB = np.array([100]);
+                    arrayA = np.concatenate((arrayA,arrayB)) 
+                    breakpoints = np.unique(np.percentile(X_train[col],arrayA))
+                    if len(breakpoints) == 2:
+                        breakpoints = np.array([breakpoints[0], np.mean(breakpoints), breakpoints[1]])
+                else:
+                    minvalue = X_train[col].min()
+                    maxvalue = X_train[col].max()
+                    breakpoints = np.arange(minvalue, maxvalue, (maxvalue-minvalue)/binn) 
+                    breakpoints = np.append(breakpoints, maxvalue)
+                #分段并标识为相应标签labels    
+                labels = np.arange(len(breakpoints) - 1)
+                X_train[col] = pd.cut(X_train[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
+                X_train[col] = X_train[col].astype('object')
+                X_test[col] = pd.cut(X_test[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
+                X_test[col] = X_test[col].astype('object')
             
+            #woe转换
+            #对test中出现但没在train中出现的值，woe取值为0
+            xtrainunique = X_train[col].unique()
+            xtestunique = X_test[col].unique()
+            for cat in xtestunique:
+                if not any(xtrainunique == cat):
+                    X_test[col] = X_test[col].replace({cat:0})
+           
+            #对train中数据做woe转换，并对test中数据做相同的转换
+            for cat in xtrainunique:
+                #计算单个分类的woe  
+                nob = max(1, sum((y_train == 1) & (X_train[col] == cat)))
+                tnob = sum(y_train == 1)
+                nog = max(1, sum((y_train == 0) & (X_train[col] == cat)))
+                tnog = sum(y_train == 0)
+                woei = np.log((nob/tnob)/(nog/tnog))
+                X_train[col] = X_train[col].replace({cat:woei})
+                if any(xtestunique == cat):
+                    X_test[col] = X_test[col].replace({cat:woei})
+
+                    
+        return X_train, X_test
             
     def dataencoder(self):
         
