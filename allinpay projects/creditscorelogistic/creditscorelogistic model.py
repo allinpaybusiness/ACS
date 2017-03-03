@@ -14,8 +14,8 @@ from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
 #一，初始化模型数据
 #################
 
-dataname = 'HMEQ'
-#dataname = 'german'
+#dataname = 'HMEQ'
+dataname = 'german'
 #dataname = 'taiwancredit'
 
 logisticmodel = CreditScoreLogistic(dataname)
@@ -73,11 +73,14 @@ predresult = self.logistic_trainandtest(binn, testsize, cv, feature_sel, bq=bq)
 #K重train and test
 
 # 遍历测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
-predresult = self.looplogistic_trainandtest_kfold(nsplit, cv, feature_sel, bq=bq ,op=op)
+predresult = self.looplogistic_trainandtest_kfold(nsplit, cv, feature_sel, bq=bq )
 
 predresult = self.looplogistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel, bq=bq ,op=op)
     
 predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, bq=bq)
+
+# 如果不做WOE，生成模型
+#predresult = self.logistic_trainandtest_kfold_nowoe(nsplit, cv, feature_sel )
 
 #################
 #四，模型预测结果评估
