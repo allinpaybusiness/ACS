@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as ss
+import sklearn.cluster as skcluster
 from sklearn import metrics
 from sklearn import preprocessing
 
@@ -167,6 +168,54 @@ class CreditScore:
                 X_train[col] = pd.cut(X_train[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
                 X_train[col] = X_train[col].astype('object')
                 X_test[col] = pd.cut(X_test[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
+                X_test[col] = X_test[col].astype('object')
+            
+            #woe转换
+            #对test中出现但没在train中出现的值，woe取值为0
+            xtrainunique = X_train[col].unique()
+            xtestunique = X_test[col].unique()
+            for cat in xtestunique:
+                if not any(xtrainunique == cat):
+                    X_test[col] = X_test[col].replace({cat:0})
+           
+            #对train中数据做woe转换，并对test中数据做相同的转换
+            for cat in xtrainunique:
+                #计算单个分类的woe  
+                nob = max(1, sum((y_train == 1) & (X_train[col] == cat)))
+                tnob = sum(y_train == 1)
+                nog = max(1, sum((y_train == 0) & (X_train[col] == cat)))
+                tnog = sum(y_train == 0)
+                woei = np.log((nob/tnob)/(nog/tnog))
+                X_train[col] = X_train[col].replace({cat:woei})
+                if any(xtestunique == cat):
+                    X_test[col] = X_test[col].replace({cat:woei})
+
+                    
+        return X_train, X_test
+        
+    def binandwoe_traintest_cluster(self, X_train, y_train, X_test, nclusters, cmethod):
+        #进行粗分类和woe转换
+        #进行粗分类（bin）时，bq=True对连续变量等分位数分段，bp=False对连续变量等宽分段
+        #先对X_train进行粗分类和woe转换，然后根据X_train的分类结果对X_test进行粗分类和woe转换
+        X_train = X_train.copy()
+        X_test = X_test.copy()
+        
+        for col in X_train.columns:
+            
+            if col == 'default':
+                continue
+            
+            #对连续特征粗分类
+            if X_train[col].dtype != 'O':
+                #按等分位数还是等宽分类
+                if cmethod == 'kmeans':
+                    x = np.array(X_train[col]).reshape([X_train.shape[0],1])
+                    cmodel = skcluster.KMeans(n_clusters=nclusters, random_state=0).fit(x)
+
+                #聚类并标识为相应标签labels    
+                X_train[col] = cmodel.labels_
+                X_train[col] = X_train[col].astype('object')
+                X_test[col] = cmodel.predict(np.array(X_test[col]).reshape([X_test.shape[0],1]))
                 X_test[col] = X_test[col].astype('object')
             
             #woe转换

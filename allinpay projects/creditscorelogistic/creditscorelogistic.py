@@ -21,7 +21,7 @@ from sklearn.feature_selection import RFECV
 
 class CreditScoreLogistic(CreditScore):
     
-    def logistic_trainandtest(self, binn, testsize, cv, feature_sel=None, varthreshold=0, bq=False):
+    def logistic_trainandtest(self, binn, testsize, cv, feature_sel=None, varthreshold=0, bq=False, nclusters=0, cmethod='kmeans'):
 
         #分割数据集为训练集和测试集
         data_feature = self.data.ix[:, self.data.columns != 'default']
@@ -29,7 +29,10 @@ class CreditScoreLogistic(CreditScore):
         X_train, X_test, y_train, y_test = train_test_split(data_feature, data_target, test_size=testsize, random_state=0)
         
         #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-        X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, binn, bq)
+        if nclusters == 0:#简单分段粗分类
+            X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, binn, bq)
+        else:#聚类粗分类
+            X_train, X_test = self.binandwoe_traintest_cluster(X_train, y_train, X_test, nclusters, cmethod)
             
         #在train中做变量筛选, sklearn.feature_selection中的方法
         if feature_sel == "VarianceThreshold":
@@ -56,7 +59,7 @@ class CreditScoreLogistic(CreditScore):
         
         return predresult
         
-    def logistic_trainandtest_kfold(self, binn, nsplit, cv, feature_sel=None, varthreshold=0, bq=False):
+    def logistic_trainandtest_kfold(self, binn, nsplit, cv, feature_sel=None, varthreshold=0, bq=False, nclusters=0, cmethod='kmeans'):
 
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -73,7 +76,10 @@ class CreditScoreLogistic(CreditScore):
                 continue
             
             #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-            X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, binn, bq)
+            if nclusters == 0:#简单分段粗分类
+                X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, binn, bq)
+            else:#聚类粗分类
+                X_train, X_test = self.binandwoe_traintest_cluster(X_train, y_train, X_test, nclusters, cmethod)
                     
             #在train中做变量筛选, sklearn.feature_selection中的方法
             if feature_sel == "VarianceThreshold":
