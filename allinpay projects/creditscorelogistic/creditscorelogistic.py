@@ -6,6 +6,7 @@ This is a temporary script file.
 """
 
 import sys;
+import os;
 sys.path.append("allinpay projects")
 from creditscore.creditscore import CreditScore
 import pandas as pd
@@ -159,7 +160,12 @@ class CreditScoreLogistic(CreditScore):
             df = pd.concat([df, temp], ignore_index = False)
             print('num %s complete' %i)
         time0 = time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))
-        df.to_csv(time0+'.csv',index=False,sep=',') 
+        exist = os.path.exists('d:/ACS_CSVS')
+        if exist:
+            df.to_csv('d:/ACS_CSVS/'+time0+'.csv',index=False,sep=',') 
+        else:
+            os.makedirs('d:/ACS_CSVS/')
+            df.to_csv('d:/ACS_CSVS/'+time0+'.csv',index=False,sep=',') 
         
     def looplogistic_trainandtest_kfold(self, nsplit, cv, feature_sel=None, varthreshold=0, bq=False):
          df = pd.DataFrame()
@@ -172,7 +178,13 @@ class CreditScoreLogistic(CreditScore):
              df = pd.concat([df, temp], ignore_index = True)
              print(' num %s complete' %i)
          time0 = time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))
-         df.to_csv(time0+'-kfold-'+'-'+self.dataname+'.csv',index=False,sep=',')  
+         exist = os.path.exists('d:/ACS_CSVS')
+         if exist:
+            df.to_csv('d:/ACS_CSVS/'+time0+'-kfold-'+'-'+self.dataname+'.csv',index=False,sep=',') 
+         else:
+            os.makedirs('d:/ACS_CSVS/')
+            df.to_csv('d:/ACS_CSVS/'+time0+'-kfold-'+'-'+self.dataname+'.csv',index=False,sep=',') 
+      
         
     def looplogistic_trainandtest_kfold_LRCV(self, nsplit, cv, feature_sel=None, varthreshold=0, bq=False ,op='liblinear'):
          df = pd.DataFrame()
@@ -185,7 +197,13 @@ class CreditScoreLogistic(CreditScore):
              df = pd.concat([df, temp], ignore_index = True)
              print(' num %s complete' %i)
          time0 = time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))
-         df.to_csv(time0+'-kfold_LRCV-'+op+'-'+self.dataname+'.csv',index=False,sep=',')
+         exist = os.path.exists('d:/ACS_CSVS')
+         if exist:
+            df.to_csv('d:/ACS_CSVS/'+time0+'-kfold_LRCV-'+op+'-'+self.dataname+'.csv',index=False,sep=',') 
+         else:
+            os.makedirs('d:/ACS_CSVS/')
+            df.to_csv('d:/ACS_CSVS/'+time0+'-kfold_LRCV-'+op+'-'+self.dataname+'.csv',index=False,sep=',') 
+
     
          
     def logistic_trainandtest_kfold_nowoe(self, nsplit, cv, feature_sel=None, varthreshold=0):
