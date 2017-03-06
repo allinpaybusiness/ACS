@@ -28,30 +28,39 @@ self = logisticmodel
 binn = 10
 # 测试样本大小
 testsize = 0.25
-
 #交叉检验法分割数量
 nsplit = 5
-
 # 变量删选分割数量
 cv = 10
-
 #进行粗分类（bin）时，bq=True对连续变量等分位数分段，bp=False对连续变量等宽分段
 bq = True
-
 #逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
+
 op = 'liblinear'
+#粗分类时聚类的数量
+nclusters=10
+#粗分类时聚类的方法
+cmethod='kmeans'
+
 
 #################
 #三，建模并预测
 #################
-#1，不筛选变量的完整模型
+#####1，不筛选变量的完整模型
+feature_sel = "origin"
+#1)简单粗分类
 #单次的train and test
 predresult = self.logistic_trainandtest(binn, testsize, cv, bq=bq)
-
 #K重train and test
 predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, bq=bq)
 
-#2，VarianceThreshold过滤变量
+#2)聚类粗分类
+#单次的train and test
+predresult = self.logistic_trainandtest(binn, testsize, cv, nclusters=nclusters, cmethod=cmethod)
+#K重train and test
+predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, nclusters=nclusters, cmethod=cmethod)
+
+######2，VarianceThreshold过滤变量
 feature_sel = "VarianceThreshold"
 varthreshold = 0.2
 #单次的train and test
@@ -60,7 +69,7 @@ predresult = self.logistic_trainandtest(binn, testsize, cv, feature_sel, varthre
 #K重train and test
 predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq=bq)
 
-#3，RFECV递归+CV选择变量
+#####3，RFECV递归+CV选择变量
 feature_sel = "RFECV"
 #单次的train and test
 

@@ -49,31 +49,26 @@ class CreditScoreKeras(CreditScore):
         return probability
     
     def keras_dnn_trainandtest(self, binn, testsize, cv, feature_sel=None, varthreshold=0, bq=False, nepoch=10, batches=5):
-        
-        #变量粗分类和woe转化
-        datawoe = self.binandwoe(binn, bq)
-        
-        #cross validation 测试
-        data_feature = datawoe.ix[:, datawoe.columns != 'default']
-        data_target = datawoe['default']
 
         #分割数据集为训练集和测试集
+        data_feature = self.data.ix[:, self.data.columns != 'default']
+        data_target = self.data['default']
         X_train, X_test, y_train, y_test = train_test_split(data_feature, data_target, test_size=testsize, random_state=0)
-
+        
+        #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
+        X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, binn, bq)
+            
+        #训练并预测模型
         probability = self.dnn_model(X_train, y_train, X_test, nepoch, batches)
         
-        predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,0]})
+        predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,0]})      
         
         return predresult
      
     def keras_dnn_trainandtest_kfold(self, binn, nsplit, cv, feature_sel=None, varthreshold=0, bq=False, nepoch=10, batches=5):
-        
-        #变量粗分类和woe转化
-        datawoe = self.binandwoe(binn, bq)
-        
-        #cross validation 测试
-        data_feature = datawoe.ix[:, datawoe.columns != 'default']
-        data_target = datawoe['default']
+
+        data_feature = self.data.ix[:, self.data.columns != 'default']
+        data_target = self.data['default'] 
 
         #将数据集分割成k个分段分别进行训练和测试，对每个分段，该分段为测试集，其余数据为训练集
         kf = KFold(n_splits=nsplit, shuffle=True)
@@ -86,11 +81,15 @@ class CreditScoreKeras(CreditScore):
             if (len(y_train.unique()) == 1) or (len(y_test.unique()) == 1):
                 continue
             
+            #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
+            X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, binn, bq)
+            
             #训练并预测模型
             probability = self.dnn_model(X_train, y_train, X_test, nepoch, batches)
             
             temp = pd.DataFrame({'target' : y_test, 'probability' : probability[:,0]})
-            predresult = pd.concat([predresult, temp], ignore_index = True)
+            predresult = pd.concat([predresult, temp], ignore_index = True)                    
+
             
         return predresult
         
