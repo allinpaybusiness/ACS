@@ -122,7 +122,7 @@ class CreditScoreLogistic(CreditScore):
             
         return predresult
 
-    def logistic_trainandtest_kfold_LRCV(self, nsplit, cv, feature_sel=None, varthreshold=0 ,op='liblinear', nclusters=10, cmethod=None):
+    def logistic_trainandtest_kfold_LRCV(self, nsplit, cv, feature_sel=None, varthreshold=0, op='liblinear', nclusters=10, cmethod=None):
         
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -217,7 +217,7 @@ class CreditScoreLogistic(CreditScore):
          df = pd.DataFrame()
          for i in range (3 , 101):#对bin做循环
              #做cross validation cv测试
-             predresult = self.logistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel, varthreshold ,op=op,i)
+             predresult = self.logistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel, varthreshold ,op=op,nclusters=i)
              #评估并保存测试结果
              auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
              temp = pd.DataFrame({'bin' : i, 'auc_value' : auc ,'ks_value' :ks,'p0=0.5,accuracy' :metrics_p['accuracy'][5]} ,index=[0])
