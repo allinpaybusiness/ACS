@@ -16,8 +16,8 @@ from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
 ##############################################################################
 ##############################################################################
 
-dataname = 'HMEQ'
-#dataname = 'german'
+#dataname = 'HMEQ'
+dataname = 'german'
 #dataname = 'taiwancredit'
 
 logisticmodel = CreditScoreLogistic(dataname)
@@ -29,21 +29,21 @@ self = logisticmodel
 ##############################################################################
 ##############################################################################
 # WOE 分割数等份
-binn = 10
+#binn = 10
 # 测试样本大小
 testsize = 0.25
 #交叉检验法分割数量
 nsplit = 5
 # 变量删选分割数量
 cv = 10
-#进行粗分类（bin）时，bq=True对连续变量等分位数分段，bp=False对连续变量等宽分段
-bq = True
+
 #逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
-op = 'sag'
+op = 'liblinear'
 #粗分类时聚类的数量
 nclusters=10
-#粗分类时聚类的方法
-cmethod='kmeans'
+#粗分类时聚类的方法,kmeans,DBSCAN,Birch，quantile
+cmethod = 'Birch'
+
 
 ##############################################################################
 ##############################################################################
@@ -54,53 +54,62 @@ cmethod='kmeans'
 feature_sel = "origin"
 #1)简单粗分类
 #单次的train and test
-predresult = self.logistic_trainandtest(binn, testsize, cv, bq=bq)
+predresult = self.logistic_trainandtest(testsize, cv, nclusters=nclusters,cmethod=cmethod)
 #K重train and test
-predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, bq=bq)
+predresult = self.logistic_trainandtest_kfold(nsplit, cv, nclusters=nclusters,cmethod=cmethod)
 
 #2)聚类粗分类
 #单次的train and test
-predresult = self.logistic_trainandtest(binn, testsize, cv, nclusters=nclusters, cmethod=cmethod)
+#predresult = self.logistic_trainandtest(testsize, cv,nclusters=nclusters,cmethod=cmethod)
 #K重train and test
-predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, nclusters=nclusters, cmethod=cmethod)
+#predresult = self.logistic_trainandtest_kfold( nsplit, cv, nclusters=nclusters, cmethod=cmethod)
 
 ######2，VarianceThreshold过滤变量
 feature_sel = "VarianceThreshold"
 varthreshold = 0.2
 #1)简单粗分类
 #单次的train and test
-predresult = self.logistic_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq=bq)
+predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold,nclusters=nclusters,cmethod=cmethod)
+
 #K重train and test
-predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq=bq)
+predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold,nclusters=nclusters,cmethod=cmethod)
 
 #2)聚类粗分类
 #单次的train and test
-predresult = self.logistic_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq=bq, nclusters=nclusters, cmethod=cmethod)
+#predresult = self.logistic_trainandtest(binn, testsize, cv, feature_sel, varthreshold, bq=bq, nclusters=nclusters, cmethod=cmethod)
 #K重train and test
-predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq=bq, nclusters=nclusters, cmethod=cmethod)
+#predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, varthreshold, bq=bq, nclusters=nclusters, cmethod=cmethod)
 
 #####3，RFECV递归+CV选择变量
 feature_sel = "RFECV"
-#1)简单粗分类
-#单次的train and test
-predresult = self.logistic_trainandtest(binn, testsize, cv, feature_sel, bq=bq)
-#K重train and test
-predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, bq=bq)
 
-#2)聚类粗分类
+##### SelectFromModel选择变量
+feature_sel = "SelectFromModel"
 #单次的train and test
-predresult = self.logistic_trainandtest(binn, testsize, cv, feature_sel, bq=bq, nclusters=nclusters, cmethod=cmethod)
-#K重train and test
-predresult = self.logistic_trainandtest_kfold(binn, nsplit, cv, feature_sel, bq=bq, nclusters=nclusters, cmethod=cmethod)
-
 
 # 遍历测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
-predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel, bq=bq)
-
-predresult = self.looplogistic_trainandtest_kfold(nsplit, cv, feature_sel, bq=bq ,op=op)
-
-predresult = self.looplogistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel, bq=bq ,op=op)
+predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel, cmethod=cmethod)
     
+# 传入binn
+predresult = self.logistic_trainandtest(testsize, cv, feature_sel, nclusters=nclusters,cmethod=cmethod)
+
+# 遍历测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
+
+predresult = self.looplogistic_trainandtest_kfold(nsplit, cv, feature_sel,cmethod=cmethod )
+
+
+predresult = self.looplogistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel,op=op,cmethod=cmethod)
+
+# 遍历测试ncluster,ncluster从3到100，本方法已包括模型评估，并且保存到文件中
+predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel,cmethod=cmethod)
+
+predresult = self.looplogistic_trainandtest_kfold(nsplit, cv, feature_sel,cmethod=cmethod)
+    
+
+predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, nclusters=nclusters,cmethod=cmethod)
+
+# 如果不做WOE，生成模型
+#predresult = self.logistic_trainandtest_kfold_nowoe(nsplit, cv, feature_sel )
 
 
 ##############################################################################
