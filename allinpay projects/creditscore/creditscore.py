@@ -222,7 +222,7 @@ class CreditScore:
                 X_train[col] = X_train[col].astype('object')
 
                 if cmethod.upper()=='DBSCAN':
-                    X_test[col] = cmodel.fit_predictpredict(np.array(X_test[col]).reshape([X_test.shape[0],1]))
+                    X_test[col] = cmodel.fit_predict(np.array(X_test[col]).reshape([X_test.shape[0],1]))
                     X_test[col] = X_test[col].astype('object')
                 else:
                     X_test[col] = cmodel.predict(np.array(X_test[col]).reshape([X_test.shape[0],1]))
