@@ -107,6 +107,17 @@ class CreditScoreLogistic(CreditScore):
                 X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
                 X_train1.columns = X_train.columns[selector.get_support(True)]
                 X_test1 = X_test[X_train1.columns]
+            elif feature_sel == "SelectFromModel":
+                estimator = LogisticRegression()
+                selector = SelectFromModel(estimator)
+                X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
+                X_train1.columns = X_train.columns[selector.get_support(True)]
+                X_test1 = X_test[X_train1.columns]
+            elif feature_sel == "SelectKBest":
+                selector = SelectKBest()
+                X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
+                X_train1.columns = X_train.columns[selector.get_support(True)]
+                X_test1 = X_test[X_train1.columns]
             else:
                 X_train1, X_test1 = X_train, X_test          
 
