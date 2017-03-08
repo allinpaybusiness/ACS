@@ -87,7 +87,7 @@ class CreditScore:
                     
         return datawoe
             
-    def binandwoe(self, binn, bq):
+    def binandwoe(self, nclusters, cmethod):
         #进行粗分类和woe转换
         #进行粗分类（bin）时，bq=True对连续变量等分位数分段，bp=False对连续变量等宽分段
         datawoe = self.data.copy()
@@ -109,8 +109,8 @@ class CreditScore:
                     datawoe[col] = datawoe[col].replace({cat:woei})            
             else:
                 #对连续特征粗分类
-                if bq == True:
-                    arrayA = np.arange(0,100,100/binn)
+                if cmethod == 'quantile':
+                    arrayA = np.arange(0,100,100/nclusters)
                     arrayB = np.array([100]);
                     arrayA = np.concatenate((arrayA,arrayB)) 
                     breakpoints = np.unique(np.percentile(datawoe[col],arrayA))
@@ -119,7 +119,7 @@ class CreditScore:
                 else:
                     minvalue = datawoe[col].min()
                     maxvalue = datawoe[col].max()
-                    breakpoints = np.arange(minvalue, maxvalue, (maxvalue-minvalue)/binn) 
+                    breakpoints = np.arange(minvalue, maxvalue, (maxvalue-minvalue)/nclusters) 
                     breakpoints = np.append(breakpoints, maxvalue)
                 labels = np.arange(len(breakpoints) - 1)
                 datawoe[col] = pd.cut(datawoe[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
@@ -136,7 +136,7 @@ class CreditScore:
                     
         return datawoe
              
-    def binandwoe_traintest(self, X_train, y_train, X_test, binn, bq):
+    def binandwoe_traintest(self, X_train, y_train, X_test, nclusters, cmethod):
         #进行粗分类和woe转换
         #进行粗分类（bin）时，bq=True对连续变量等分位数分段，bp=False对连续变量等宽分段
         #先对X_train进行粗分类和woe转换，然后根据X_train的分类结果对X_test进行粗分类和woe转换
@@ -151,8 +151,8 @@ class CreditScore:
             #对连续特征粗分类
             if X_train[col].dtype != 'O':
                 #按等分位数还是等宽分类
-                if bq == True:
-                    arrayA = np.arange(0,100,100/binn)
+                if cmethod == 'quantile':
+                    arrayA = np.arange(0,100,100/nclusters)
                     arrayB = np.array([100]);
                     arrayA = np.concatenate((arrayA,arrayB)) 
                     breakpoints = np.unique(np.percentile(X_train[col],arrayA))
@@ -161,7 +161,7 @@ class CreditScore:
                 else:
                     minvalue = X_train[col].min()
                     maxvalue = X_train[col].max()
-                    breakpoints = np.arange(minvalue, maxvalue, (maxvalue-minvalue)/binn) 
+                    breakpoints = np.arange(minvalue, maxvalue, (maxvalue-minvalue)/nclusters) 
                     breakpoints = np.append(breakpoints, maxvalue)
                 #分段并标识为相应标签labels    
                 labels = np.arange(len(breakpoints) - 1)
@@ -211,13 +211,22 @@ class CreditScore:
                 if cmethod == 'kmeans':
                     x = np.array(X_train[col]).reshape([X_train.shape[0],1])
                     cmodel = skcluster.KMeans(n_clusters=nclusters, random_state=0).fit(x)
-
+                elif cmethod.upper()=='DBSCAN':
+                    x = np.array(X_train[col]).reshape([X_train.shape[0],1])
+                    cmodel = skcluster.DBSCAN(min_samples=nclusters).fit(x)
+                elif cmethod.upper() =='BIRCH':
+                    x = np.array(X_train[col]).reshape([X_train.shape[0],1])
+                    cmodel = skcluster.Birch(threshold=0.1,n_clusters=None).fit(x)
                 #聚类并标识为相应标签labels    
                 X_train[col] = cmodel.labels_
                 X_train[col] = X_train[col].astype('object')
-                X_test[col] = cmodel.predict(np.array(X_test[col]).reshape([X_test.shape[0],1]))
-                X_test[col] = X_test[col].astype('object')
-            
+
+                if cmethod.upper()=='DBSCAN':
+                    X_test[col] = cmodel.fit_predictpredict(np.array(X_test[col]).reshape([X_test.shape[0],1]))
+                    X_test[col] = X_test[col].astype('object')
+                else:
+                    X_test[col] = cmodel.predict(np.array(X_test[col]).reshape([X_test.shape[0],1]))
+                    X_test[col] = X_test[col].astype('object')
             #woe转换
             #对test中出现但没在train中出现的值，woe取值为0
             xtrainunique = X_train[col].unique()
