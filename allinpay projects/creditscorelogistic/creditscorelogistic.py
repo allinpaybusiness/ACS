@@ -32,10 +32,7 @@ class CreditScoreLogistic(CreditScore):
         X_train, X_test, y_train, y_test = train_test_split(data_feature, data_target, test_size=testsize, random_state=0)
         
         #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-        if cmethod == None or cmethod =='quantile':#简单分段粗分类
-            X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
-        else:#聚类粗分类
-            X_train, X_test = self.binandwoe_traintest_cluster(X_train, y_train, X_test, nclusters, cmethod)
+        X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
             
         #在train中做变量筛选, sklearn.feature_selection中的方法
         if feature_sel == "VarianceThreshold":
@@ -90,10 +87,7 @@ class CreditScoreLogistic(CreditScore):
                 continue
             
             #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-            if cmethod == None or cmethod =='quantile':#简单分段粗分类
-                X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
-            else:#聚类粗分类
-                X_train, X_test = self.binandwoe_traintest_cluster(X_train, y_train, X_test, nclusters, cmethod)
+            X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
                     
             #在train中做变量筛选, sklearn.feature_selection中的方法
             if feature_sel == "VarianceThreshold":
@@ -104,6 +98,17 @@ class CreditScoreLogistic(CreditScore):
             elif feature_sel == "RFECV":
                 estimator = LogisticRegression()
                 selector = RFECV(estimator, step=1, cv=cv)
+                X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
+                X_train1.columns = X_train.columns[selector.get_support(True)]
+                X_test1 = X_test[X_train1.columns]
+            elif feature_sel == "SelectFromModel":
+                estimator = LogisticRegression()
+                selector = SelectFromModel(estimator)
+                X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
+                X_train1.columns = X_train.columns[selector.get_support(True)]
+                X_test1 = X_test[X_train1.columns]
+            elif feature_sel == "SelectKBest":
+                selector = SelectKBest()
                 X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
                 X_train1.columns = X_train.columns[selector.get_support(True)]
                 X_test1 = X_test[X_train1.columns]
@@ -122,7 +127,7 @@ class CreditScoreLogistic(CreditScore):
             
         return predresult
 
-    def logistic_trainandtest_kfold_LRCV(self, nsplit, cv, feature_sel=None, varthreshold=0 ,op='liblinear', nclusters=10, cmethod=None):
+    def logistic_trainandtest_kfold_LRCV(self, nsplit, cv, feature_sel=None, varthreshold=0, op='liblinear', nclusters=10, cmethod=None):
         
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -139,10 +144,7 @@ class CreditScoreLogistic(CreditScore):
                 continue
             
             #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-            if cmethod == None or cmethod =='quantile':#简单分段粗分类
-                X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
-            else:#聚类粗分类
-                X_train, X_test = self.binandwoe_traintest_cluster(X_train, y_train, X_test, nclusters, cmethod)
+            X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
                     
             #在train中做变量筛选, sklearn.feature_selection中的方法
             if feature_sel == "VarianceThreshold":
@@ -217,7 +219,11 @@ class CreditScoreLogistic(CreditScore):
          df = pd.DataFrame()
          for i in range (3 , 101):#对bin做循环
              #做cross validation cv测试
+<<<<<<< HEAD
              predresult = self.logistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel, varthreshold ,op=op,nclusters =i)
+=======
+             predresult = self.logistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel, varthreshold ,op=op,nclusters=i)
+>>>>>>> upstream/master
              #评估并保存测试结果
              auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
              temp = pd.DataFrame({'bin' : i, 'auc_value' : auc ,'ks_value' :ks,'p0=0.5,accuracy' :metrics_p['accuracy'][5]} ,index=[0])

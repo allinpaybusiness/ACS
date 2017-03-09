@@ -15,12 +15,14 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import KFold
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.feature_selection import RFECV
+from sklearn.feature_selection import SelectFromModel
+from sklearn.feature_selection import SelectKBest
 from sklearn.neural_network import MLPClassifier
 from sklearn.neural_network import MLPRegressor
 
 class CreditScoreMLP(CreditScore):
     
-    def MLP_trainandtest(self, binn, testsize, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes):
+    def MLP_trainandtest(self, testsize, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=10, cmethod=None):
         
         #分割数据集为训练集和测试集
         data_feature = self.data.ix[:, self.data.columns != 'default']
@@ -28,8 +30,8 @@ class CreditScoreMLP(CreditScore):
         X_train, X_test, y_train, y_test = train_test_split(data_feature, data_target, test_size=testsize, random_state=0)
         
         #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-        X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, binn, bq)
-            
+        X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
+       
         #在train中做变量筛选, sklearn.feature_selection中的方法
         if feature_sel == "VarianceThreshold":
             selector = VarianceThreshold(threshold = varthreshold)
@@ -42,11 +44,22 @@ class CreditScoreMLP(CreditScore):
             X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
             X_train1.columns = X_train.columns[selector.get_support(True)]
             X_test1 = X_test[X_train1.columns]
+        elif feature_sel == "SelectFromModel":
+            estimator = LogisticRegression()
+            selector = SelectFromModel(estimator)
+            X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
+            X_train1.columns = X_train.columns[selector.get_support(True)]
+            X_test1 = X_test[X_train1.columns]
+        elif feature_sel == "SelectKBest":
+            selector = SelectKBest()
+            X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
+            X_train1.columns = X_train.columns[selector.get_support(True)]
+            X_test1 = X_test[X_train1.columns]
         else:
             X_train1, X_test1 = X_train, X_test        
             
         #训练并预测模型
-        classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
+        classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
         #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
         probability = 0
         for i in range(10):
@@ -60,7 +73,7 @@ class CreditScoreMLP(CreditScore):
         
         return predresult
      
-    def MLP_trainandtest_kfold(self, binn, nsplit, cv, feature_sel, varthreshold, bq, alpha, *hidden_layer_sizes):
+    def MLP_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=10, cmethod=None):
         
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -77,7 +90,7 @@ class CreditScoreMLP(CreditScore):
                 continue
             
             #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-            X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, binn, bq)
+            X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
                     
             #在train中做变量筛选, sklearn.feature_selection中的方法
             if feature_sel == "VarianceThreshold":
@@ -91,11 +104,22 @@ class CreditScoreMLP(CreditScore):
                 X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
                 X_train1.columns = X_train.columns[selector.get_support(True)]
                 X_test1 = X_test[X_train1.columns]
+            elif feature_sel == "SelectFromModel":
+                estimator = LogisticRegression()
+                selector = SelectFromModel(estimator)
+                X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
+                X_train1.columns = X_train.columns[selector.get_support(True)]
+                X_test1 = X_test[X_train1.columns]
+            elif feature_sel == "SelectKBest":
+                selector = SelectKBest()
+                X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
+                X_train1.columns = X_train.columns[selector.get_support(True)]
+                X_test1 = X_test[X_train1.columns]
             else:
                 X_train1, X_test1 = X_train, X_test      
             
             #训练并预测模型
-            classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
+            classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
             #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
             probability = 0
             for i in range(10):
