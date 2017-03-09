@@ -65,20 +65,6 @@ predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, acti
 #K重train and test
 predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters, cmethod)
 
-#2，VarianceThreshold过滤变量
-feature_sel = "VarianceThreshold"
-#单次的train and test
-predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=nclusters, cmethod=cmethod)
-#K重train and test
-predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=nclusters, cmethod=cmethod)
-
-#3，RFECV递归+CV选择变量
-feature_sel = "RFECV"
-#单次的train and test
-predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=nclusters, cmethod=cmethod)
-#K重train and test
-predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=nclusters, cmethod=cmethod)
-
 ##############################################################################
 ##############################################################################
 #四，模型预测结果评估
