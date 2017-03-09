@@ -90,10 +90,7 @@ class CreditScoreMLP(CreditScore):
                 continue
             
             #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-            if cmethod == None or cmethod =='quantile':#简单分段粗分类
-                X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
-            else:#聚类粗分类
-                X_train, X_test = self.binandwoe_traintest_cluster(X_train, y_train, X_test, nclusters, cmethod)
+            X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
                     
             #在train中做变量筛选, sklearn.feature_selection中的方法
             if feature_sel == "VarianceThreshold":
