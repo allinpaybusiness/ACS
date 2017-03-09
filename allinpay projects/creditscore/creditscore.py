@@ -174,18 +174,18 @@ class CreditScore:
                     cmodel = skcluster.Birch(threshold=0.1,n_clusters=None).fit(x)
 
                     
-                #分段并标识为相应标签labels   
+  
                 if (cmethod == 'quantile') or (cmethod == 'equal'):
+                    #分段并标识为相应标签labels 
                     labels = np.arange(len(breakpoints) - 1)
                     X_train[col] = pd.cut(X_train[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
                     X_train[col] = X_train[col].astype('object')
                     X_test[col] = pd.cut(X_test[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
                     X_test[col] = X_test[col].astype('object')
-                #根据聚类结果标识为相应标签labels 
-                if (cmethod == 'kmeans') or (cmethod.upper()=='DBSCAN') or (cmethod.upper() =='BIRCH'):
+                elif (cmethod == 'kmeans') or (cmethod.upper()=='DBSCAN') or (cmethod.upper() =='BIRCH'):
+                    #根据聚类结果标识为相应标签labels 
                     X_train[col] = cmodel.labels_
-                    X_train[col] = X_train[col].astype('object')
-    
+                    X_train[col] = X_train[col].astype('object')    
                     if cmethod.upper()=='DBSCAN':
                         X_test[col] = cmodel.fit_predict(np.array(X_test[col]).reshape([X_test.shape[0],1]))
                         X_test[col] = X_test[col].astype('object')
