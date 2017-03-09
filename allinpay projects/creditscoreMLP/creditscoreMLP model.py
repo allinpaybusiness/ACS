@@ -38,10 +38,11 @@ varthreshold = 0.2
 #粗分类时聚类的数量
 nclusters=10
 #粗分类时聚类的方法,kmeans,DBSCAN,Birch，quantile(等分位数划分)，None(等距划分)
-cmethod = 'kmeans'
-#cmethod = None
-#cmethod = 'quantile'
+#cmethod = 'equal'
+cmethod = 'quantile'
+#cmethod = 'kmeans'
 #cmethod = 'Birch'
+#method = 'DBSCAN'
 
 ##############################################################################
 ##############################################################################
