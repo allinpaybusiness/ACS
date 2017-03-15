@@ -7,8 +7,9 @@ This is a temporary script file.
 
 import sys;
 sys.path.append("allinpay projects")
-from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
-
+from imp import reload
+import creditscorelogistic.classlogistic
+#reload(creditscorelogistic.classlogistic)
 
 ##############################################################################
 ##############################################################################
@@ -19,8 +20,7 @@ from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
 #dataname = 'HMEQ'
 dataname = 'german'
 #dataname = 'taiwancredit'
-
-logisticmodel = CreditScoreLogistic(dataname)
+logisticmodel = creditscorelogistic.classlogistic.CreditScoreLogistic(dataname)
 self = logisticmodel
 
 ##############################################################################

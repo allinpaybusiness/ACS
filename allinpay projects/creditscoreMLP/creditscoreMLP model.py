@@ -7,8 +7,9 @@ This is a temporary script file.
 
 import sys;
 sys.path.append("allinpay projects")
-from creditscoreMLP.creditscoreMLP import CreditScoreMLP
-
+from imp import reload
+import creditscoreMLP.classMLP
+#reload(creditscoreMLP.classMLP)
 
 ##############################################################################
 ##############################################################################
@@ -18,7 +19,7 @@ from creditscoreMLP.creditscoreMLP import CreditScoreMLP
 dataname = 'HMEQ'
 #dataname = 'german'
 #dataname = 'taiwancredit'
-MLPmodel = CreditScoreMLP(dataname)
+MLPmodel = creditscoreMLP.classMLP.CreditScoreMLP(dataname)
 self = MLPmodel
 
 ##############################################################################
