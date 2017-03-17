@@ -58,7 +58,7 @@ class CreditScoreSVC(CreditScore):
         else:
             X_train1, X_test1 = X_train, X_test        
             
-        #训练并预测随机森林模型
+        #训练并预测SVC模型
         tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-1, 1e-2, 1e-3, 1e-4], 'C': [1, 10, 100, 1000]},
                 {'kernel': ['linear'], 'C': [1, 10, 100, 1000]},
                  {'kernel': ['sigmoid'], 'gamma': [1e-1, 1e-2, 1e-3, 1e-4], 'C': [1, 10, 100, 1000]}]
