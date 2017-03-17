@@ -150,12 +150,12 @@ class CreditScore:
             
             #对连续特征粗分类
             if X_train[col].dtype != 'O':
-
                 if cmethod == 'quantile':#等分位数划分
                     arrayA = np.arange(0,100,100/nclusters)
                     arrayB = np.array([100]);
                     arrayA = np.concatenate((arrayA,arrayB)) 
                     breakpoints = np.unique(np.percentile(X_train[col],arrayA))
+                    print('breakpoints==' %breakpoints)
                     if len(breakpoints) == 2:
                         breakpoints = np.array([breakpoints[0], np.mean(breakpoints), breakpoints[1]])
                 elif cmethod == 'equal':#等距离划分
@@ -172,6 +172,10 @@ class CreditScore:
                 elif cmethod.upper() =='BIRCH':#birch聚类划分
                     x = np.array(X_train[col]).reshape([X_train.shape[0],1])
                     cmodel = skcluster.Birch(threshold=0.1,n_clusters=None).fit(x)
+                elif cmethod =='MiniBatchKMeans':#MiniBatchKMeans聚类划分
+                    x = np.array(X_train[col]).reshape([X_train.shape[0],1])
+                    cmodel = skcluster.MiniBatchKMeans(n_clusters=nclusters).fit(x)
+
 
                     
   

@@ -11,6 +11,7 @@ sys.path.append("allinpay projects")
 from creditscore.creditscore import CreditScore
 import pandas as pd
 import time
+from sklearn import tree  
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import LogisticRegressionCV
@@ -97,6 +98,7 @@ class CreditScoreLogistic(CreditScore):
                 X_test1 = X_test[X_train1.columns]
             elif feature_sel == "RFECV":
                 estimator = LogisticRegression()
+              # estimator = tree.DecisionTreeClassifier()
                 selector = RFECV(estimator, step=1, cv=cv)
                 X_train1 = pd.DataFrame(selector.fit_transform(X_train, y_train))
                 X_train1.columns = X_train.columns[selector.get_support(True)]
@@ -177,7 +179,7 @@ class CreditScoreLogistic(CreditScore):
         df = pd.DataFrame()
         for i in range (3 , 101):#对bin或者ncluster做循环
             #分割train test做测试
-            predresult = self.logistic_trainandtest(i, testsize, cv, feature_sel, varthreshold,nclusters=i,cmethod=cmethod)
+            predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold,nclusters=i,cmethod=cmethod)
             #评估并保存测试结果
             auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
             temp = pd.DataFrame({'bin' : i, 'auc_value' : auc ,'ks_value' :ks ,'p0=0.5' :metrics_p['accuracy'][5]} ,index=[0])
@@ -195,7 +197,7 @@ class CreditScoreLogistic(CreditScore):
          df = pd.DataFrame()
          for i in range (3 , 101):#对bin或者ncluster做循环
              #做cross validation测试
-             predresult = self.logistic_trainandtest_kfold(i, nsplit, cv, feature_sel, varthreshold,nclusters =i,cmethod=cmethod)
+             predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold,nclusters =i,cmethod=cmethod)
              #评估并保存测试结果
              auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
              temp = pd.DataFrame({'bin' : i, 'auc_value' : auc ,'ks_value' :ks,'p0=0.5,accuracy' :metrics_p['accuracy'][5]} ,index=[0])
@@ -219,11 +221,9 @@ class CreditScoreLogistic(CreditScore):
          df = pd.DataFrame()
          for i in range (3 , 101):#对bin做循环
              #做cross validation cv测试
-<<<<<<< HEAD
-             predresult = self.logistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel, varthreshold ,op=op,nclusters =i)
-=======
+
              predresult = self.logistic_trainandtest_kfold_LRCV(nsplit, cv, feature_sel, varthreshold ,op=op,nclusters=i)
->>>>>>> upstream/master
+
              #评估并保存测试结果
              auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
              temp = pd.DataFrame({'bin' : i, 'auc_value' : auc ,'ks_value' :ks,'p0=0.5,accuracy' :metrics_p['accuracy'][5]} ,index=[0])
