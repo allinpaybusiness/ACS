@@ -9,7 +9,7 @@ import sys;
 sys.path.append("allinpay projects")
 from imp import reload
 import creditscoreSVC.classSVC
-#reload(creditscoreSVC.classSVC)
+reload(creditscoreSVC.classSVC)
 
 ##############################################################################
 ##############################################################################

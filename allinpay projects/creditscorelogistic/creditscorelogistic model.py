@@ -9,7 +9,7 @@ import sys;
 sys.path.append("allinpay projects")
 from imp import reload
 import creditscorelogistic.classlogistic
-#reload(creditscorelogistic.classlogistic)
+reload(creditscorelogistic.classlogistic)
 
 ##############################################################################
 ##############################################################################
