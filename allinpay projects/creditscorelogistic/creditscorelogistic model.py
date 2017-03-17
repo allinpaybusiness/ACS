@@ -7,8 +7,9 @@ This is a temporary script file.
 
 import sys;
 sys.path.append("allinpay projects")
-from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
-
+from imp import reload
+import creditscorelogistic.classlogistic
+#reload(creditscorelogistic.classlogistic)
 
 ##############################################################################
 ##############################################################################
@@ -19,8 +20,7 @@ from creditscorelogistic.creditscorelogistic import CreditScoreLogistic
 #dataname = 'HMEQ'
 dataname = 'german'
 #dataname = 'taiwancredit'
-
-logisticmodel = CreditScoreLogistic(dataname)
+logisticmodel = creditscorelogistic.classlogistic.CreditScoreLogistic(dataname)
 self = logisticmodel
 
 ##############################################################################
@@ -28,15 +28,7 @@ self = logisticmodel
 #二，设置模型参数
 ##############################################################################
 ##############################################################################
-# 测试样本大小
-testsize = 0.25
-#交叉检验法分割数量
-nsplit = 5
-# 变量删选分割数量
-cv = 10
-
-#逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
-op = 'liblinear'
+#1,粗分类和woe转换设置
 #粗分类时聚类的数量
 nclusters=60
 #粗分类时聚类的方法,kmeans,DBSCAN,Birch,quantile(等分位数划分)，None(等距划分)
@@ -45,6 +37,23 @@ cmethod = 'quantile'
 #cmethod = 'kmeans'
 #cmethod = 'Birch'
 #method = 'DBSCAN'
+#2，训练集和测试集的划分
+# 测试样本大小
+testsize = 0.25
+#交叉检验法分割数量
+nsplit = 5
+#3，变量筛选设置
+feature_sel = 'origin'
+#feature_sel = "VarianceThreshold"
+#feature_sel = "RFECV"
+#feature_sel == "SelectFromModel"
+#feature_sel == "SelectKBest"
+cv = 10
+varthreshold = 0.2
+#4，Logistic算法设置
+#逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
+op = 'liblinear'
+
 
 
 ##############################################################################
@@ -52,37 +61,10 @@ cmethod = 'quantile'
 #三，建模并预测
 ##############################################################################
 ##############################################################################
-#####1，不筛选变量的完整模型
-feature_sel = "origin"
-#1)简单以及聚类粗分类
 #单次的train and test
-predresult = self.logistic_trainandtest(testsize, cv, nclusters=nclusters,cmethod=cmethod)
+predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold, nclusters, cmethod)
 #K重train and test
-predresult = self.logistic_trainandtest_kfold(nsplit, cv, nclusters=nclusters,cmethod=cmethod)
-
-######2，VarianceThreshold过滤变量
-feature_sel = "VarianceThreshold"
-varthreshold = 0.2
-#1)简单以及聚类粗分类
-#单次的train and test
-predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold,nclusters=nclusters,cmethod=cmethod)
-#K重train and test
-predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold,nclusters=nclusters,cmethod=cmethod)
-
-#####3，RFECV递归+CV选择变量
-feature_sel = "RFECV"
-#1)简单以及聚类粗分类
-#单次的train and test
-predresult = self.logistic_trainandtest(testsize, cv, feature_sel, nclusters=nclusters, cmethod=cmethod)
-#K重train and test
-predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, nclusters=nclusters, cmethod=cmethod)
-
-##### 4，SelectFromModel选择变量
-feature_sel = "SelectFromModel"
-#单次的train and test
-predresult = self.logistic_trainandtest(testsize, cv, feature_sel, nclusters=nclusters,cmethod=cmethod)
-#K重train and test
-predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, nclusters=nclusters,cmethod=cmethod)
+predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nclusters, cmethod)
 
 # 遍历测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
 predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel, cmethod=cmethod)

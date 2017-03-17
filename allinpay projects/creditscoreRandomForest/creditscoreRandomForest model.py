@@ -8,8 +8,8 @@ This is a temporary script file.
 import sys;
 sys.path.append("allinpay projects")
 from imp import reload
-import creditscorekeras.classkeras
-#reload(creditscorekeras.classkeras)
+import creditscoreRandomForest.classRandomForest
+#reload(creditscoreRandomForest.classRandomForest)
 
 ##############################################################################
 ##############################################################################
@@ -19,8 +19,8 @@ import creditscorekeras.classkeras
 dataname = 'HMEQ'
 #dataname = 'german'
 #dataname = 'taiwancredit'
-kerasmodel = creditscorekeras.classkeras.CreditScoreKeras(dataname)
-self = kerasmodel
+RFmodel = creditscoreRandomForest.classRandomForest.CreditScoreRandomForest(dataname)
+self = RFmodel
 
 ##############################################################################
 ##############################################################################
@@ -47,22 +47,22 @@ feature_sel = 'origin'
 #feature_sel == "SelectKBest"
 cv = 10
 varthreshold = 0.2
-#4，Keras算法设置
-batches = 100
-nepoch = 10
-
-
+#4，决策树算法设置
+ntrees = 200
+nodes = 1
+rfmethod = 'RandomForest'
+#rfmethod = 'ExtraTrees'
+#rfmethod = 'GradientBoosting'
 
 ##############################################################################
 ##############################################################################
 #三，建模并预测
 ##############################################################################
 ##############################################################################
-#1，不筛选变量的完整模型
 #单次的train and test
-predresult = self.keras_dnn_trainandtest(testsize, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod)
+predresult = self.RF_trainandtest(testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod)
 #K重train and test
-predresult = self.keras_dnn_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod)
+predresult = self.RF_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod)
 
 ##############################################################################
 ##############################################################################
