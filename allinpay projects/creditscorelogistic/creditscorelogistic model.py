@@ -50,7 +50,19 @@ feature_sel = 'origin'
 #feature_sel == "SelectKBest"
 cv = 10
 varthreshold = 0.2
-#4，Logistic算法设置
+#4,样本重采样
+#4.0 不重采样
+resmethod = None
+#4.1 欠采样 undersampling
+#resmethod = 'ClusterCentroids'
+#resmethod = 'CondensedNearestNeighbour'
+#resmethod = 'NearMiss'
+#resmethod = 'RandomUnderSampler'
+#4.2 过采样 oversampling
+#resmethod = 'ADASYN'
+#resmethod = 'RandomOverSampler'
+#resmethod = 'SMOTE'
+#5，Logistic算法设置
 #逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
 op = 'liblinear'
 
@@ -62,9 +74,9 @@ op = 'liblinear'
 ##############################################################################
 ##############################################################################
 #单次的train and test
-predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold, nclusters, cmethod)
+predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod)
 #K重train and test
-predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nclusters, cmethod)
+predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod)
 
 # 遍历测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
 predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel, cmethod=cmethod)

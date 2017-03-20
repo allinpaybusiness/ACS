@@ -12,7 +12,8 @@ import scipy.stats as ss
 import sklearn.cluster as skcluster
 from sklearn import metrics
 from sklearn import preprocessing
-
+import imblearn.under_sampling
+import imblearn.over_sampling
 
 class CreditScore:
     
@@ -236,7 +237,35 @@ class CreditScore:
         data_feature_enc = pd.concat([data_feature0, data_feature1_enc], axis=1)    
         
         return(data_feature_enc)
-       
+
+    def imbalanceddata (self, X_train, y_train, resmethod):
+
+        if resmethod == 'ClusterCentroids':
+            nm = imblearn.under_sampling.RandomUnderSampler(random_state=0)
+            X_res, y_res = nm.fit_sample(X_train, y_train)    
+        elif resmethod == 'CondensedNearestNeighbour':
+            nm = imblearn.under_sampling.RandomUnderSampler(random_state=0)
+            X_res, y_res = nm.fit_sample(X_train, y_train)   
+        elif resmethod == 'NearMiss':
+            nm = imblearn.under_sampling.NearMiss(random_state=0)
+            X_res, y_res = nm.fit_sample(X_train, y_train)
+        elif resmethod == 'RandomUnderSampler':
+            nm = imblearn.under_sampling.RandomUnderSampler(random_state=0)
+            X_res, y_res = nm.fit_sample(X_train, y_train)
+        elif resmethod == 'ADASYN':
+            nm = imblearn.over_sampling.ADASYN(random_state=0)
+            X_res, y_res = nm.fit_sample(X_train, y_train)
+        elif resmethod == 'RandomOverSampler':
+            nm = imblearn.over_sampling.RandomOverSampler(random_state=0)
+            X_res, y_res = nm.fit_sample(X_train, y_train)
+        elif resmethod == 'SMOTE':
+            nm = imblearn.over_sampling.ADASYN(random_state=0)
+            X_res, y_res = nm.fit_sample(X_train, y_train)
+        else:
+            X_res, y_res = X_train, y_train
+            
+        return X_res, y_res
+        
     def modelmetrics_binary(self, predresult):
         
         #准确率
