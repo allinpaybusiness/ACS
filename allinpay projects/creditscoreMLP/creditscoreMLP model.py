@@ -62,9 +62,9 @@ alpha = 0.0001
 ##############################################################################
 ##############################################################################
 #单次的train and test
-predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters, cmethod)
+predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation, alpha, nclusters, cmethod, *hidden_layer_sizes)
 #K重train and test
-predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters, cmethod)
+predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, alpha, nclusters, cmethod, *hidden_layer_sizes)
 
 ##############################################################################
 ##############################################################################

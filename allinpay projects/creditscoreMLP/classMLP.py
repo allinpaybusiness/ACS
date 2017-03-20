@@ -22,7 +22,7 @@ from sklearn.neural_network import MLPRegressor
 
 class CreditScoreMLP(CreditScore):
     
-    def MLP_trainandtest(self, testsize, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=10, cmethod=None):
+    def MLP_trainandtest(self, testsize, cv, feature_sel, varthreshold, activation, alpha, nclusters=10, cmethod=None, *hidden_layer_sizes):
         
         #分割数据集为训练集和测试集
         data_feature = self.data.ix[:, self.data.columns != 'default']
@@ -73,7 +73,7 @@ class CreditScoreMLP(CreditScore):
         
         return predresult
      
-    def MLP_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=10, cmethod=None):
+    def MLP_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, activation, alpha, nclusters=10, cmethod=None, *hidden_layer_sizes):
         
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
