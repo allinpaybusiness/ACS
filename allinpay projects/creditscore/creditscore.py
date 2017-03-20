@@ -155,7 +155,6 @@ class CreditScore:
                     arrayB = np.array([100]);
                     arrayA = np.concatenate((arrayA,arrayB)) 
                     breakpoints = np.unique(np.percentile(X_train[col],arrayA))
-                    print('breakpoints==' %breakpoints)
                     if len(breakpoints) == 2:
                         breakpoints = np.array([breakpoints[0], np.mean(breakpoints), breakpoints[1]])
                 elif cmethod == 'equal':#等距离划分

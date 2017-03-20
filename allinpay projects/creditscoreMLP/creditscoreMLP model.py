@@ -16,9 +16,9 @@ import creditscoreMLP.classMLP
 #一，初始化模型数据
 ##############################################################################
 ##############################################################################
-dataname = 'HMEQ'
+#dataname = 'HMEQ'
 #dataname = 'german'
-#dataname = 'taiwancredit'
+dataname = 'taiwancredit'
 MLPmodel = creditscoreMLP.classMLP.CreditScoreMLP(dataname)
 self = MLPmodel
 
@@ -29,7 +29,7 @@ self = MLPmodel
 ##############################################################################
 #1,粗分类和woe转换设置
 #粗分类时聚类的数量
-nclusters=10
+nclusters=100
 #粗分类时聚类的方法,kmeans,DBSCAN,Birch，quantile(等分位数划分)，None(等距划分)
 #cmethod = 'equal'
 cmethod = 'quantile'
@@ -56,15 +56,16 @@ activation = 'relu'
 #activation = 'logistic'
 alpha = 0.0001
 
+
 ##############################################################################
 ##############################################################################
 #三，建模并预测
 ##############################################################################
 ##############################################################################
 #单次的train and test
-predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters, cmethod)
+predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=nclusters, cmethod=cmethod)
 #K重train and test
-predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters, cmethod)
+predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=nclusters, cmethod=cmethod)
 
 ##############################################################################
 ##############################################################################

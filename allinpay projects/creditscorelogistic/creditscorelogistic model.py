@@ -18,8 +18,8 @@ import creditscorelogistic.classlogistic
 ##############################################################################
 
 #dataname = 'HMEQ'
-dataname = 'german'
-#dataname = 'taiwancredit'
+#dataname = 'german'
+dataname = 'taiwancredit'
 logisticmodel = creditscorelogistic.classlogistic.CreditScoreLogistic(dataname)
 self = logisticmodel
 
@@ -53,7 +53,6 @@ varthreshold = 0.2
 #4，Logistic算法设置
 #逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
 op = 'liblinear'
-
 
 
 ##############################################################################
