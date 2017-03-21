@@ -14,6 +14,7 @@ from sklearn import metrics
 from sklearn import preprocessing
 import imblearn.under_sampling
 import imblearn.over_sampling
+import imblearn.combine
 
 class CreditScore:
     
@@ -260,6 +261,12 @@ class CreditScore:
             X_res, y_res = nm.fit_sample(X_train, y_train)
         elif resmethod == 'SMOTE':
             nm = imblearn.over_sampling.ADASYN(random_state=0)
+            X_res, y_res = nm.fit_sample(X_train, y_train)
+        elif resmethod == 'SMOTEENN':
+            nm = imblearn.combine.SMOTEENN(random_state=0)
+            X_res, y_res = nm.fit_sample(X_train, y_train)
+        elif resmethod == 'SMOTETomek':
+            nm = imblearn.combine.SMOTETomek(random_state=0)
             X_res, y_res = nm.fit_sample(X_train, y_train)
         else:
             X_res, y_res = X_train, y_train
