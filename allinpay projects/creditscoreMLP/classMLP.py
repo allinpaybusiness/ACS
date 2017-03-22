@@ -59,7 +59,7 @@ class CreditScoreMLP(CreditScore):
             X_train1, X_test1 = X_train, X_test        
             
         #训练并预测模型
-        classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
+        classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, alpha=alpha)  # 使用类，参数全是默认的
         #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
         probability = 0
         for i in range(10):
@@ -119,7 +119,7 @@ class CreditScoreMLP(CreditScore):
                 X_train1, X_test1 = X_train, X_test      
             
             #训练并预测模型
-            classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
+            classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, alpha=alpha)  # 使用类，参数全是默认的
             #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
             probability = 0
             for i in range(10):
