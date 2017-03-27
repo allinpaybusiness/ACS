@@ -152,7 +152,6 @@ class CreditScore:
             
             #对连续特征粗分类
             if X_train[col].dtype != 'O':
-
                 if cmethod == 'quantile':#等分位数划分
                     arrayA = np.arange(0,100,100/nclusters)
                     arrayB = np.array([100]);
@@ -174,6 +173,11 @@ class CreditScore:
                 elif cmethod.upper() =='BIRCH':#birch聚类划分
                     x = np.array(X_train[col]).reshape([X_train.shape[0],1])
                     cmodel = skcluster.Birch(threshold=0.1,n_clusters=None).fit(x)
+                elif cmethod =='MiniBatchKMeans':#MiniBatchKMeans聚类划分
+                    x = np.array(X_train[col]).reshape([X_train.shape[0],1])
+                    cmodel = skcluster.MiniBatchKMeans(n_clusters=nclusters).fit(x)
+
+
                     
   
                 if (cmethod == 'quantile') or (cmethod == 'equal'):

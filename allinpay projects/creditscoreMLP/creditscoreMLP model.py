@@ -16,9 +16,9 @@ import creditscoreMLP.classMLP
 #一，初始化模型数据
 ##############################################################################
 ##############################################################################
-dataname = 'HMEQ'
+#dataname = 'HMEQ'
 #dataname = 'german'
-#dataname = 'taiwancredit'
+dataname = 'taiwancredit'
 MLPmodel = creditscoreMLP.classMLP.CreditScoreMLP(dataname)
 self = MLPmodel
 
@@ -29,7 +29,7 @@ self = MLPmodel
 ##############################################################################
 #1,粗分类和woe转换设置
 #粗分类时聚类的数量
-nclusters=10
+nclusters=100
 #粗分类时聚类的方法,kmeans,DBSCAN,Birch，quantile(等分位数划分)，None(等距划分)
 #cmethod = 'equal'
 cmethod = 'quantile'
@@ -50,11 +50,18 @@ feature_sel = 'origin'
 cv = 10
 varthreshold = 0.2
 #4，MLP算法设置
-hidden_layer_sizes = (64,)
+hidden_layer_sizes = (33,)
 #hidden_layer_sizes = (64,32,)
 activation = 'relu'
 #activation = 'logistic'
+#最大迭代次数
+max_iter =10000
+
 alpha = 0.0001
+
+#{‘lbfgs’, ‘sgd’, ‘adam’}, default ‘adam’
+solver ='sgd'
+
 
 ##############################################################################
 ##############################################################################
@@ -62,10 +69,15 @@ alpha = 0.0001
 ##############################################################################
 ##############################################################################
 #单次的train and test
-predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation, alpha, nclusters, cmethod, *hidden_layer_sizes)
-#K重train and test
-predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, alpha, nclusters, cmethod, *hidden_layer_sizes)
 
+predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation,solver, alpha, max_iter,nclusters, cmethod, *hidden_layer_sizes)
+#K重train and test
+predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, solver,alpha, max_iter, nclusters, cmethod, *hidden_layer_sizes)
+
+
+self.loopMLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation,solver, alpha, max_iter, nclusters, cmethod)
+
+self.loopMLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation,solver, alpha, max_iter, nclusters, cmethod)
 ##############################################################################
 ##############################################################################
 #四，模型预测结果评估
