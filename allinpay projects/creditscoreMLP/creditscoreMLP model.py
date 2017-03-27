@@ -55,12 +55,12 @@ hidden_layer_sizes = (33,)
 activation = 'relu'
 #activation = 'logistic'
 #最大迭代次数
-max_iter =1000
+max_iter =10000
 
 alpha = 0.0001
 
 #{‘lbfgs’, ‘sgd’, ‘adam’}, default ‘adam’
-solver ='adam'
+solver ='sgd'
 
 
 ##############################################################################
