@@ -8,6 +8,9 @@ This is a temporary script file.
 import sys;
 import os;
 sys.path.append("allinpay projects")
+from imp import reload
+import creditscore.creditscore
+reload(creditscore.creditscore)
 from creditscore.creditscore import CreditScore
 import pandas as pd
 import time
@@ -24,7 +27,7 @@ from sklearn.feature_selection import SelectKBest
 
 class CreditScoreLogistic(CreditScore):
     
-    def logistic_trainandtest(self, testsize, cv, feature_sel=None, varthreshold=0, nclusters=10, cmethod=None):
+    def logistic_trainandtest(self, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod):
 
         #分割数据集为训练集和测试集
         data_feature = self.data.ix[:, self.data.columns != 'default']
@@ -60,6 +63,9 @@ class CreditScoreLogistic(CreditScore):
         else:
             X_train1, X_test1 = X_train, X_test        
             
+        #重采样resampling 解决样本不平衡问题
+        X_train1, y_train = self.imbalanceddata (X_train1, y_train, resmethod) 
+            
         #训练并预测模型
         classifier = LogisticRegression()  # 使用类，参数全是默认的
         classifier.fit(X_train1, y_train)  
@@ -70,7 +76,7 @@ class CreditScoreLogistic(CreditScore):
         
         return predresult
         
-    def logistic_trainandtest_kfold(self, nsplit, cv, feature_sel=None, varthreshold=0, nclusters=10, cmethod=None):
+    def logistic_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod):
 
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -115,6 +121,8 @@ class CreditScoreLogistic(CreditScore):
             else:
                 X_train1, X_test1 = X_train, X_test          
 
+            #重采样resampling 解决样本不平衡问题
+            X_train1, y_train = self.imbalanceddata (X_train1, y_train, resmethod)
             
             #训练并预测模型
             classifier = LogisticRegression()  # 使用类，参数全是默认的

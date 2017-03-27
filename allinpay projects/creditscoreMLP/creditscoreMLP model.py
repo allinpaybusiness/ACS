@@ -50,11 +50,17 @@ feature_sel = 'origin'
 cv = 10
 varthreshold = 0.2
 #4，MLP算法设置
-hidden_layer_sizes = (64,)
+hidden_layer_sizes = (33,)
 #hidden_layer_sizes = (64,32,)
 activation = 'relu'
 #activation = 'logistic'
+#最大迭代次数
+max_iter =1000
+
 alpha = 0.0001
+
+#{‘lbfgs’, ‘sgd’, ‘adam’}, default ‘adam’
+solver ='adam'
 
 
 ##############################################################################
@@ -63,10 +69,15 @@ alpha = 0.0001
 ##############################################################################
 ##############################################################################
 #单次的train and test
-predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=nclusters, cmethod=cmethod)
-#K重train and test
-predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=nclusters, cmethod=cmethod)
 
+predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation,solver, alpha, max_iter,nclusters, cmethod, *hidden_layer_sizes)
+#K重train and test
+predresult = self.MLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation, solver,alpha, max_iter, nclusters, cmethod, *hidden_layer_sizes)
+
+
+self.loopMLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation,solver, alpha, max_iter, nclusters, cmethod)
+
+self.loopMLP_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, activation,solver, alpha, max_iter, nclusters, cmethod)
 ##############################################################################
 ##############################################################################
 #四，模型预测结果评估

@@ -6,10 +6,12 @@ This is a temporary script file.
 """
 
 import sys;
+import os;
 sys.path.append("allinpay projects")
 from creditscore.creditscore import CreditScore
 import numpy as np
 import pandas as pd
+import time
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import KFold
@@ -22,7 +24,7 @@ from sklearn.neural_network import MLPRegressor
 
 class CreditScoreMLP(CreditScore):
     
-    def MLP_trainandtest(self, testsize, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=10, cmethod=None):
+    def MLP_trainandtest(self, testsize, cv, feature_sel, varthreshold, activation,solver, alpha,  max_iter =1000,nclusters=10, cmethod=None, *hidden_layer_sizes):
         
         #分割数据集为训练集和测试集
         data_feature = self.data.ix[:, self.data.columns != 'default']
@@ -59,7 +61,7 @@ class CreditScoreMLP(CreditScore):
             X_train1, X_test1 = X_train, X_test        
             
         #训练并预测模型
-        classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
+        classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation,solver=solver,alpha=alpha, max_iter =1000)  # 使用类，参数全是默认的
         #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
         probability = 0
         for i in range(10):
@@ -67,13 +69,14 @@ class CreditScoreMLP(CreditScore):
             classifier.fit(X_train1, y_train)  
             #预测概率
             probability += classifier.predict_proba(X_test1)[:,1]
+            print("probability == %s" % (classifier.predict_proba(X_test1)[:,1]))
         probability = probability / 10
         
         predresult = pd.DataFrame({'target' : y_test, 'probability' : probability})
         
         return predresult
      
-    def MLP_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, activation, alpha, *hidden_layer_sizes, nclusters=10, cmethod=None):
+    def MLP_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, activation,solver, alpha,  max_iter =1000,nclusters=10, cmethod=None, *hidden_layer_sizes):
         
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -119,7 +122,7 @@ class CreditScoreMLP(CreditScore):
                 X_train1, X_test1 = X_train, X_test      
             
             #训练并预测模型
-            classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, alpha=alpha, random_state=1)  # 使用类，参数全是默认的
+            classifier = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation,solver=solver, alpha=alpha,max_iter =max_iter)  # 使用类，参数全是默认的
             #为避免单次神经网络训练不收敛的情况，反复训练10次，最终预测概率为10次的平均值
             probability = 0
             for i in range(10):
@@ -127,6 +130,7 @@ class CreditScoreMLP(CreditScore):
                 classifier.fit(X_train1, y_train)  
                 #预测概率
                 probability += classifier.predict_proba(X_test1)[:,1]
+                print("probability == %s" % (classifier.predict_proba(X_test1)[:,1]))
             probability = probability / 10
             
             temp = pd.DataFrame({'target' : y_test, 'probability' : probability})
@@ -134,7 +138,44 @@ class CreditScoreMLP(CreditScore):
 
             
         return predresult
-        
+       
+    def loopMLP_trainandtest(self, testsize, cv, feature_sel, varthreshold, activation, solver,alpha, max_iter =1000, nclusters=10, cmethod=None):
+        df = pd.DataFrame()
+        for i in range (3 , 101,3):#对神经元做循环
+            hidden_layer_sizes = (i,)
+            #分割train test做测试
+            predresult = self.MLP_trainandtest(testsize, cv, feature_sel, varthreshold, activation,solver ,alpha, max_iter,nclusters, cmethod, *hidden_layer_sizes)
+            #评估并保存测试结果
+            auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
+            temp = pd.DataFrame({'hidden_first_layer' : i, 'auc_value' : auc ,'ks_value' :ks ,'p0=0.5' :metrics_p['accuracy'][5]} ,index=[0])
+            df = pd.concat([df, temp], ignore_index = False)
+            print('num %s complete' %i)
+        time0 = time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))
+        exist = os.path.exists('d:/ACS_CSVS')
+        if exist:
+            df.to_csv('d:/ACS_CSVS/'+time0+'_MLP.csv',index=False,sep=',') 
+        else:
+            os.makedirs('d:/ACS_CSVS/')
+            df.to_csv('d:/ACS_CSVS/'+time0+'_MLP.csv',index=False,sep=',') 
+            
+    def loopMLP_trainandtest_kfold(self, testsize, cv, feature_sel, varthreshold, activation, solver,alpha, max_iter =1000, nclusters=10, cmethod=None):
+        df = pd.DataFrame()
+        for i in range (3 , 101,3):#对神经元做循环
+            hidden_layer_sizes = (i,)
+            #分割train test做测试
+            predresult = self.MLP_trainandtest_kfold(testsize, cv, feature_sel, varthreshold, activation,solver ,alpha, max_iter,nclusters, cmethod, *hidden_layer_sizes)
+            #评估并保存测试结果
+            auc, ks, metrics_p = self.loopmodelmetrics_scores(predresult)
+            temp = pd.DataFrame({'hidden_first_layer' : i, 'auc_value' : auc ,'ks_value' :ks ,'p0=0.5' :metrics_p['accuracy'][5]} ,index=[0])
+            df = pd.concat([df, temp], ignore_index = False)
+            print('num %s complete' %i)
+        time0 = time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))
+        exist = os.path.exists('d:/ACS_CSVS')
+        if exist:
+            df.to_csv('d:/ACS_CSVS/'+time0+'_MLP.csv',index=False,sep=',') 
+        else:
+            os.makedirs('d:/ACS_CSVS/')
+            df.to_csv('d:/ACS_CSVS/'+time0+'_MLP.csv',index=False,sep=',') 
         
         
         
