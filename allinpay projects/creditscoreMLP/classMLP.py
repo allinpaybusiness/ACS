@@ -133,7 +133,7 @@ class CreditScoreMLP(CreditScore):
                 classifier.fit(X_train1, y_train)  
                 #预测概率
                 probability += classifier.predict_proba(X_test1)[:,1]
-                print("probability == %s" % (classifier.predict_proba(X_test1)[:,1]))
+  
             probability = probability / 10
             
             temp = pd.DataFrame({'target' : y_test, 'probability' : probability})
