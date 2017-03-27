@@ -18,8 +18,8 @@ reload(creditscorelogistic.classlogistic)
 ##############################################################################
 
 #dataname = 'HMEQ'
-dataname = 'german'
-#dataname = 'taiwancredit'
+#dataname = 'german'
+dataname = 'taiwancredit'
 logisticmodel = creditscorelogistic.classlogistic.CreditScoreLogistic(dataname)
 self = logisticmodel
 
@@ -30,8 +30,8 @@ self = logisticmodel
 ##############################################################################
 #1,粗分类和woe转换设置
 #粗分类时聚类的数量
-nclusters=10
-#粗分类时聚类的方法,kmeans,DBSCAN,Birch，quantile(等分位数划分)，None(等距划分)
+nclusters=60
+#粗分类时聚类的方法,kmeans,DBSCAN,Birch,quantile(等分位数划分)，None(等距划分)
 #cmethod = 'equal'
 cmethod = 'quantile'
 #cmethod = 'kmeans'
@@ -68,7 +68,6 @@ resmethod = None
 #5，Logistic算法设置
 #逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
 op = 'liblinear'
-
 
 
 ##############################################################################
