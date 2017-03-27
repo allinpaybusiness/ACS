@@ -62,6 +62,9 @@ resmethod = None
 #resmethod = 'ADASYN'
 #resmethod = 'RandomOverSampler'
 #resmethod = 'SMOTE'
+#4.3 过采样欠采样结合
+#resmethod = 'SMOTEENN'
+#resmethod = 'SMOTETomek'
 #5，Logistic算法设置
 #逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
 op = 'liblinear'
