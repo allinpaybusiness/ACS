@@ -18,8 +18,8 @@ reload(creditscorelogistic.classlogistic)
 ##############################################################################
 
 #dataname = 'HMEQ'
-#dataname = 'german'
-dataname = 'taiwancredit'
+dataname = 'german'
+#dataname = 'taiwancredit'
 logisticmodel = creditscorelogistic.classlogistic.CreditScoreLogistic(dataname)
 self = logisticmodel
 
@@ -30,8 +30,8 @@ self = logisticmodel
 ##############################################################################
 #1,粗分类和woe转换设置
 #粗分类时聚类的数量
-nclusters=60
-#粗分类时聚类的方法,kmeans,DBSCAN,Birch,quantile(等分位数划分)，None(等距划分)
+nclusters=10
+#粗分类时聚类的方法,kmeans,DBSCAN,Birch，quantile(等分位数划分)，None(等距划分)
 #cmethod = 'equal'
 cmethod = 'quantile'
 #cmethod = 'kmeans'
@@ -70,6 +70,7 @@ resmethod = None
 op = 'liblinear'
 
 
+
 ##############################################################################
 ##############################################################################
 #三，建模并预测
@@ -96,8 +97,12 @@ predresult = self.looplogistic_trainandtest_kfold(nsplit, cv, feature_sel,cmetho
 #四，模型预测结果评估
 ##############################################################################
 ##############################################################################
+#对模型总体预测能力的评价：
 self.modelmetrics_scores(predresult)
-
-
+#计算最优P0阈值
+riskcontrol_cost = 0.01
+lend_rate = 0.18
+borrow_rate = 0.07
+self.maxprofit_p0(predresult, riskcontrol_cost, lend_rate, borrow_rate)
 
 

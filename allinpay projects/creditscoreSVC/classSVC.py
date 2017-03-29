@@ -6,12 +6,10 @@ This is a temporary script file.
 """
 
 import sys;
-
 sys.path.append("allinpay projects")
 from creditscore.creditscore import CreditScore
 import numpy as np
 import pandas as pd
-
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import KFold
@@ -22,9 +20,7 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 
-
 class CreditScoreSVC(CreditScore):
-
     
     def SVC_trainandtest(self, testsize, cv, feature_sel, varthreshold, nclusters=10, cmethod=None):
         
@@ -177,7 +173,6 @@ class CreditScoreSVC(CreditScore):
             else:
                 X_train1, X_test1 = X_train, X_test      
             
-
             #训练并预测随机森林模型
             tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-1, 1e-2, 1e-3, 1e-4], 'C': [1, 10, 100, 1000]},
                     {'kernel': ['linear'], 'C': [1, 10, 100, 1000]},
@@ -186,7 +181,6 @@ class CreditScoreSVC(CreditScore):
             #classifier = SVC(kernel=kernel, probability=True)
             classifier.fit(X_train1, y_train)  
             probability = classifier.predict_proba(X_test1)[:,1]
-
             
             temp = pd.DataFrame({'target' : y_test, 'probability' : probability})
             predresult = pd.concat([predresult, temp], ignore_index = True)        
@@ -194,7 +188,6 @@ class CreditScoreSVC(CreditScore):
             
         return predresult
         
-
         
         
         

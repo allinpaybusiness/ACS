@@ -368,6 +368,39 @@ class CreditScore:
         plt.title('KS-CURVE characteristic example')
         plt.legend(loc="lower right")
         plt.show()
+    
+    def maxprofit_p0(self, predresult, riskcontrol_cost, lend_rate, borrow_rate):
+        
+        ###在某个概率分界值p下，模型预测的各项准确率
+        profit_p0 = pd.DataFrame()
+        for p0 in range(1, 100):
+            predresult['predicted'] = (predresult.probability > p0/100).astype(int)
+
+            confusion_matrix = pd.DataFrame(metrics.confusion_matrix(predresult['target'], predresult['predicted']), index=['real_negtive', 'real_postive'], columns=['pred_negtive', 'pred_postive'])  
+            confusion_matrix_prob = confusion_matrix.copy()
+            confusion_matrix_prob.iloc[:, 0] = confusion_matrix_prob.iloc[:, 0] / confusion_matrix_prob.iloc[:, 0].sum()
+            confusion_matrix_prob.iloc[:, 1] = confusion_matrix_prob.iloc[:, 1] / confusion_matrix_prob.iloc[:, 1].sum()
+    
+            pass_rate = sum(predresult.predicted == 0)/predresult.shape[0]
+            
+            if np.isnan(confusion_matrix_prob.iloc[1, 0]):
+                confusion_matrix_prob.iloc[1, 0] = 0    
+            revenue = pass_rate * (1 - confusion_matrix_prob.iloc[1, 0]) * (lend_rate - borrow_rate)
+            loss = riskcontrol_cost + pass_rate * confusion_matrix_prob.iloc[1, 0] * (1 + borrow_rate)
+            
+            tot_profit = revenue - loss
+            profit_rate = tot_profit / pass_rate
+
+            temp = pd.DataFrame({'p0': p0/100, 'tot_profit': tot_profit, 'profit_rate': profit_rate, 'revenue': revenue, 'loss': loss, 'pass_rate': pass_rate, 'FalseNegative': confusion_matrix_prob.iloc[1, 0]}, index=[0])
+            profit_p0 = pd.concat([profit_p0, temp], ignore_index = True)
+            
+        profit_p0 = profit_p0[['p0', 'tot_profit', 'profit_rate', 'revenue', 'loss', 'pass_rate', 'FalseNegative']]
+        profit_p0 = profit_p0.sort_values(by='tot_profit', ascending=False)  
+        
+        print("Best P0:")
+        print(profit_p0.iloc[0, :])
+        
+        return profit_p0
         
     def loopmodelmetrics_scores(self, predresult):
         

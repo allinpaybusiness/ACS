@@ -8,7 +8,7 @@ This is a temporary script file.
 import sys;
 sys.path.append("allinpay projects")
 from creditscore.creditscore import CreditScore
-import numpy as np
+import numpy as np 
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -20,6 +20,7 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+
 
 class CreditScoreRandomForest(CreditScore):
     
