@@ -7,6 +7,9 @@ This is a temporary script file.
 
 import sys;
 sys.path.append("allinpay projects")
+from imp import reload
+import creditscore.creditscore
+reload(creditscore.creditscore)
 from creditscore.creditscore import CreditScore
 import numpy as np
 import pandas as pd
@@ -23,7 +26,7 @@ from keras.optimizers import SGD
 
 class CreditScoreKeras(CreditScore):
     
-    def dnn_model(self, X_train, y_train, X_test, nepoch, batches):
+    def dnn1_model(self, X_train, y_train, X_test, nepoch, batches):
         #建立DNN模型
         model = Sequential()
         model.add(Dense(64, input_dim=X_train.shape[1], kernel_regularizer=l2(0.01)))
@@ -47,8 +50,39 @@ class CreditScoreKeras(CreditScore):
         probability = model.predict_proba(X_test.values)
         
         return probability
-    
-    def keras_dnn_trainandtest(self, testsize, cv, feature_sel=None, varthreshold=0, nepoch=10, batches=5, nclusters=10, cmethod=None):
+
+    def dnn2_model(self, X_train, y_train, X_test, nepoch, batches):
+        #建立DNN模型
+        model = Sequential()
+        model.add(Dense(64, input_dim=X_train.shape[1], kernel_regularizer=l2(0.01)))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(64, kernel_regularizer=l2(0.01)))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(64, kernel_regularizer=l2(0.01)))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(64, kernel_regularizer=l2(0.01)))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(64, kernel_regularizer=l2(0.01)))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(1))
+        model.add(Activation('sigmoid'))
+
+        model.compile(loss='binary_crossentropy', optimizer='rmsprop')
+            
+        #训练模型
+        model.fit(X_train.values, y_train.values, epochs=nepoch, batch_size=int(X_train.shape[0]/batches)) 
+        
+        #预测
+        probability = model.predict_proba(X_test.values)
+        
+        return probability
+        
+    def keras_dnn_trainandtest(self, testsize, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
 
         #分割数据集为训练集和测试集
         data_feature = self.data.ix[:, self.data.columns != 'default']
@@ -60,13 +94,16 @@ class CreditScoreKeras(CreditScore):
  
             
         #训练并预测模型
-        probability = self.dnn_model(X_train, y_train, X_test, nepoch, batches)
-        
+        if deepmodel == 'dnn1':
+            probability = self.dnn1_model(X_train, y_train, X_test, nepoch, batches)
+        elif deepmodel == 'dnn2':
+            probability = self.dnn2_model(X_train, y_train, X_test, nepoch, batches)
+            
         predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,0]})      
         
         return predresult
      
-    def keras_dnn_trainandtest_kfold(self, nsplit, cv, feature_sel=None, varthreshold=0, nepoch=10, batches=5, nclusters=10, cmethod=None):
+    def keras_dnn_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
 
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -86,8 +123,11 @@ class CreditScoreKeras(CreditScore):
             X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
             
             #训练并预测模型
-            probability = self.dnn_model(X_train, y_train, X_test, nepoch, batches)
-            
+            if deepmodel == 'dnn1':
+                probability = self.dnn1_model(X_train, y_train, X_test, nepoch, batches)
+            elif deepmodel == 'dnn2':
+                probability = self.dnn2_model(X_train, y_train, X_test, nepoch, batches)
+                
             temp = pd.DataFrame({'target' : y_test, 'probability' : probability[:,0]})
             predresult = pd.concat([predresult, temp], ignore_index = True)                    
 
