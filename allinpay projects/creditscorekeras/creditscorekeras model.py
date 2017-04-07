@@ -80,6 +80,12 @@ predresult = self.keras_dnn_trainandtest(testsize, cv, feature_sel, varthreshold
 #K重train and test
 predresult = self.keras_dnn_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
 
+#2，用SVC过滤keras的预测结果
+#单次的train and test
+predresult = self.keras_SVC_dnn_trainandtest(testsize, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
+#K重train and test
+predresult = self.keras_SVC_dnn_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
+
 ##############################################################################
 ##############################################################################
 #四，模型预测结果评估
