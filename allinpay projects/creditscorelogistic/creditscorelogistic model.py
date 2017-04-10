@@ -69,7 +69,22 @@ resmethod = None
 #逻辑回归优化方法：liblinear，lbfgs，newton-cg，sag，样本超过10W建议用sag
 op = 'liblinear'
 
-
+#6,数据预处理
+#preprocess = None
+#标准化、将数据缩放至给定的最小值与最大值之间
+preprocess = 'MinMaxScaler'
+#标准化、将最大的绝对值缩放至单位大小
+#preprocess = 'MaxAbsScaler'
+#保存训练集中的参数（均值、方差）直接使用其对象转换测试集数据
+#preprocess = 'StandardScaler'
+#直接将给定数据进行标准化
+#preprocess = 'scale'
+#归一化、对训练集和测试集的拟合和转换,#向量空间模型(VSM)的基础，用于文本分类和聚类处理。
+#preprocess = 'Normalizer'
+#归一化、对指定数据进行转换
+#preprocess = 'normalize'
+#二值化、将数值型的特征值转换为布尔值，可以用于概率估计
+#preprocess = 'Binarizer'
 
 ##############################################################################
 ##############################################################################
@@ -77,9 +92,9 @@ op = 'liblinear'
 ##############################################################################
 ##############################################################################
 #单次的train and test
-predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod)
+predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
 #K重train and test
-predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod)
+predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
 
 # 遍历测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
 predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel, cmethod=cmethod)
