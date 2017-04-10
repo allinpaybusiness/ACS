@@ -136,17 +136,7 @@ class CreditScoreLogistic(CreditScore):
             else:
                 X_train1, X_test1 = X_train, X_test   
                        
-            #缺失值处理
-            #均值
-            imp  = Imputer(missing_values='NaN', strategy='mean', axis=0)
-            #中位数
-            #imp  = Imputer(missing_values='NaN', strategy='median', axis=0)
-            #最频繁出现的
-            #imp  = Imputer(missing_values='NaN', strategy='most_frequent', axis=0)
-            X_test1 = imp.fit_transform(X_test1)
-            X_test1 = imp.transform(X_test1)
-            #数据预处理
-            X_train1, X_test1 = self.preprocessData (X_train1, X_test1, preprocess)
+            
             #重采样resampling 解决样本不平衡问题
             X_train1, y_train = self.imbalanceddata (X_train1, y_train, resmethod)
             

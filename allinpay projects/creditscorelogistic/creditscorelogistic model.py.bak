@@ -92,9 +92,9 @@ preprocess = 'MinMaxScaler'
 ##############################################################################
 ##############################################################################
 #单次的train and test
-predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
+predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod,preprocess)
 #K重train and test
-predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
+predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod,preprocess)
 
 # 遍历测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
 predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel, cmethod=cmethod)
