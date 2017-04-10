@@ -67,7 +67,9 @@ batches = 100
 nepoch = 10
 #deepmodel = 'dnn1'
 deepmodel = 'dnn2'
-
+#6, 是否对变量做pca变换
+pca = True
+#pca = False
 
 ##############################################################################
 ##############################################################################
@@ -76,15 +78,15 @@ deepmodel = 'dnn2'
 ##############################################################################
 #1，不筛选变量的完整模型
 #单次的train and test
-predresult = self.keras_dnn_trainandtest(testsize, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
+predresult = self.keras_dnn_trainandtest(testsize, cv, feature_sel, varthreshold, pca, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
 #K重train and test
-predresult = self.keras_dnn_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
+predresult = self.keras_dnn_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, pca, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
 
 #2，用SVC过滤keras的预测结果
 #单次的train and test
-predresult = self.keras_SVC_dnn_trainandtest(testsize, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
+predresult = self.keras_SVC_dnn_trainandtest(testsize, cv, feature_sel, varthreshold, pca, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
 #K重train and test
-predresult = self.keras_SVC_dnn_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
+predresult = self.keras_SVC_dnn_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, pca, nepoch, batches, nclusters, cmethod, resmethod, deepmodel)
 
 ##############################################################################
 ##############################################################################

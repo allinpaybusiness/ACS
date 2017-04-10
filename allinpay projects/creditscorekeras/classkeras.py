@@ -18,6 +18,7 @@ from sklearn.model_selection import KFold
 from sklearn import preprocessing
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
+from sklearn.decomposition import PCA
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.layers import Embedding
@@ -90,7 +91,7 @@ class CreditScoreKeras(CreditScore):
         
         return probability
         
-    def keras_dnn_trainandtest(self, testsize, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
+    def keras_dnn_trainandtest(self, testsize, cv, feature_sel, varthreshold, pca, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
 
         #分割数据集为训练集和测试集
         data_feature = self.data.ix[:, self.data.columns != 'default']
@@ -100,6 +101,13 @@ class CreditScoreKeras(CreditScore):
         #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
         X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
  
+        #是否对特征做PCA变换
+        if pca == True:
+            pca = PCA(n_components=0.95, svd_solver='full')
+            pca.fit(X_train)
+            #print(pca.explained_variance_ratio_)
+            X_train = pd.DataFrame(pca.transform(X_train))
+            X_test = pd.DataFrame(pca.transform(X_test))
             
         #训练并预测模型
         if deepmodel == 'dnn1':
@@ -111,7 +119,7 @@ class CreditScoreKeras(CreditScore):
         
         return predresult
 
-    def keras_SVC_dnn_trainandtest(self, testsize, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
+    def keras_SVC_dnn_trainandtest(self, testsize, cv, feature_sel, varthreshold, pca, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
 
         #keras预测违约概率
         #分割数据集为训练集和测试集
@@ -121,6 +129,14 @@ class CreditScoreKeras(CreditScore):
         
         #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
         X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod) 
+
+        #是否对特征做PCA变换
+        if pca == True:
+            pca = PCA(n_components=0.95, svd_solver='full')
+            pca.fit(X_train)
+            #print(pca.explained_variance_ratio_)
+            X_train = pd.DataFrame(pca.transform(X_train))
+            X_test = pd.DataFrame(pca.transform(X_test))
             
         #训练并预测模型
         if deepmodel == 'dnn1':
@@ -141,7 +157,7 @@ class CreditScoreKeras(CreditScore):
         
         return predresult
         
-    def keras_dnn_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
+    def keras_dnn_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, pca, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
 
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -159,6 +175,14 @@ class CreditScoreKeras(CreditScore):
             
             #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
             X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
+
+            #是否对特征做PCA变换
+            if pca == True:
+                pca = PCA(n_components=0.95, svd_solver='full')
+                pca.fit(X_train)
+                #print(pca.explained_variance_ratio_)
+                X_train = pd.DataFrame(pca.transform(X_train))
+                X_test = pd.DataFrame(pca.transform(X_test))
             
             #训练并预测模型
             if deepmodel == 'dnn1':
@@ -172,7 +196,7 @@ class CreditScoreKeras(CreditScore):
             
         return predresult
         
-    def keras_SVC_dnn_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
+    def keras_SVC_dnn_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, pca, nepoch, batches, nclusters, cmethod, resmethod, deepmodel):
 
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -190,6 +214,14 @@ class CreditScoreKeras(CreditScore):
             
             #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
             X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
+
+            #是否对特征做PCA变换
+            if pca == True:
+                pca = PCA(n_components=0.95, svd_solver='full')
+                pca.fit(X_train)
+                #print(pca.explained_variance_ratio_)
+                X_train = pd.DataFrame(pca.transform(X_train))
+                X_test = pd.DataFrame(pca.transform(X_test))
             
             #训练并预测模型
             if deepmodel == 'dnn1':
