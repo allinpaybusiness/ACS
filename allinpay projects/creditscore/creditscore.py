@@ -276,7 +276,44 @@ class CreditScore:
             X_res, y_res = X_train, y_train
             
         return X_res, y_res
+    
+    def preprocessData (self, X_train, X_test, preprocess):
+    	    #最小最大值标准化
+        if preprocess == "MinMaxScaler":
+        	 scal = preprocessing.MinMaxScaler()
+        	 X_train1 = scal.fit_transform(X_train)
+        	 X_test1 = scal.transform(X_test)
+        #绝对值最大标准化
+        elif preprocess == "MaxAbsScaler":
+        	 scal = preprocessing.MaxAbsScaler()
+        	 X_train1 = scal.fit_transform(X_train)
+        	 X_test1 = scal.transform(X_test)
+        #平均值和标准差
+        elif preprocess == "StandardScaler":
+           scal = preprocessing.StandardScaler().fit(X_train)
+           X_train1 = scal.transform(X_train)
+           X_test1 = scal.transform(X_test)
+        elif preprocess == "scale":
+            X_train1 = preprocessing.scale(X_train)
+            X_test1 = preprocessing.scale(X_test)
+        #归一化
+        elif preprocess == "Normalizer":
+            scal = preprocessing.Normalizer().fit(X_train)
+            X_train1 = scal.transform(X_train)
+            X_test1 = scal.transform(X_test)
+        elif preprocess == "normalize":
+            X_train1 = preprocessing.normalize(X_train, norm='l2')
+            X_test1 =  preprocessing.normalize(X_test, norm='l2')
+        #二值法
+        elif preprocess == "Binarizer":
+            scal = preprocessing.Binarizer().fit(X_train)
+            X_train1 = scal.transform(X_train)
+            X_test1 = scal.transform(X_test)
+        else:
+            X_train1, X_test1 = X_train, X_test
         
+        return X_train1, X_test1
+            
     def modelmetrics_binary(self, predresult):
         
         #准确率

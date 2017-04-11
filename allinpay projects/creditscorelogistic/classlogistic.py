@@ -22,12 +22,14 @@ from sklearn.feature_selection import VarianceThreshold
 from sklearn.feature_selection import RFECV
 from sklearn.feature_selection import SelectFromModel
 from sklearn.feature_selection import SelectKBest
+from sklearn import preprocessing
+from sklearn.preprocessing import Imputer
 
 
 
 class CreditScoreLogistic(CreditScore):
     
-    def logistic_trainandtest(self, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod):
+    def logistic_trainandtest(self, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess):
 
         #分割数据集为训练集和测试集
         data_feature = self.data.ix[:, self.data.columns != 'default']
@@ -61,7 +63,20 @@ class CreditScoreLogistic(CreditScore):
             X_train1.columns = X_train.columns[selector.get_support(True)]
             X_test1 = X_test[X_train1.columns]
         else:
-            X_train1, X_test1 = X_train, X_test        
+            X_train1, X_test1 = X_train, X_test    
+            
+                
+        #缺失值处理
+        #均值
+        imp  = Imputer(missing_values='NaN', strategy='mean', axis=0)
+        #中位数
+        #imp  = Imputer(missing_values='NaN', strategy='median', axis=0)
+        #最频繁出现的
+        #imp  = Imputer(missing_values='NaN', strategy='most_frequent', axis=0)
+        X_train1 = imp.fit_transform(X_train1)
+        X_test1 = imp.transform(X_test1)
+        #数据预处理
+        X_train1, X_test1 = self.preprocessData (X_train1, X_test1, preprocess)
             
         #重采样resampling 解决样本不平衡问题
         X_train1, y_train = self.imbalanceddata (X_train1, y_train, resmethod) 
@@ -76,7 +91,7 @@ class CreditScoreLogistic(CreditScore):
         
         return predresult
         
-    def logistic_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod):
+    def logistic_trainandtest_kfold(self, nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess):
 
         data_feature = self.data.ix[:, self.data.columns != 'default']
         data_target = self.data['default'] 
@@ -119,8 +134,19 @@ class CreditScoreLogistic(CreditScore):
                 X_train1.columns = X_train.columns[selector.get_support(True)]
                 X_test1 = X_test[X_train1.columns]
             else:
-                X_train1, X_test1 = X_train, X_test          
-
+                X_train1, X_test1 = X_train, X_test   
+                       
+            #缺失值处理
+            #均值
+            imp  = Imputer(missing_values='NaN', strategy='mean', axis=0)
+            #中位数
+            #imp  = Imputer(missing_values='NaN', strategy='median', axis=0)
+            #最频繁出现的
+            #imp  = Imputer(missing_values='NaN', strategy='most_frequent', axis=0)
+            X_train1 = imp.fit_transform(X_train1)
+            X_test1 = imp.transform(X_test1)
+            #数据预处理
+            X_train1, X_test1 = self.preprocessData (X_train1, X_test1, preprocess)
             #重采样resampling 解决样本不平衡问题
             X_train1, y_train = self.imbalanceddata (X_train1, y_train, resmethod)
             
