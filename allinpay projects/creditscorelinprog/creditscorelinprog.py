@@ -6,12 +6,21 @@ Created on Fri Apr  7 14:56:45 2017
 """
 ##############################################################################
 #为方便与logistic模型结果的比对，评分卡为“颠倒型”，也就是分数越高，违约可能越大
+#线性规划的基本想法是将评分卡设置为特征的线性组合后，最小化错判的分值差
+#如果好人的得分高于好人线，或者坏人的得分低于坏人线，则判定为错判
+# 目标函数：min sum(a_i)
+# 约束条件：
+# i = customer, j = category
+# if not default, sum(C_j*X_ij)-a_i <= cutoff_good
+# if default, sum(C_j*X_ij)+a_i >= cutoff_bad
+# for any i, a_i >= 0, for any j, C_j no constraint
 ##############################################################################
+
 import sys;
-sys.path.append("allinpay projects")
+sys.path.append("allinpay projects/creditscorelinprog")
 from imp import reload
-import creditscorelinprog.classlinprog
-reload(creditscorelinprog.classlinprog)
+import classlinprog
+reload(classlinprog)
 
 ##############################################################################
 ##############################################################################
@@ -22,7 +31,7 @@ reload(creditscorelinprog.classlinprog)
 #dataname = 'HMEQ'
 dataname = 'german'
 #dataname = 'taiwancredit'
-LinProgmodel = creditscorelinprog.classlinprog.CreditScoreLinearProgramming(dataname)
+LinProgmodel = classlinprog.CreditScoreLinearProgramming(dataname)
 self = LinProgmodel
 
 ##############################################################################
@@ -41,7 +50,7 @@ cmethod = 'quantile'
 #method = 'DBSCAN'
 #2，训练集和测试集的划分
 # 测试样本大小
-testsize = 0.9
+testsize = 0.3
 #交叉检验法分割数量
 nsplit = 5
 #3，变量筛选设置
@@ -68,7 +77,7 @@ resmethod = None
 #resmethod = 'SMOTEENN'
 #resmethod = 'SMOTETomek'
 #5 Linear Programming 的变量
-cutoff_good = -1
+cutoff_good = -3  ## cutoff_good 应当为负
 cutoff_bad = cutoff_good   ## cutoff_bad 应当大于或等于cutoff_good
 error_cost_ratio = 5
 

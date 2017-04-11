@@ -7,15 +7,24 @@ Created on Fri Apr  7 14:56:14 2017
 
 ##############################################################################
 #为方便与logistic模型结果的比对，评分卡为“颠倒型”，也就是分数越高，违约可能越大
+#线性规划的基本想法是将评分卡设置为特征的线性组合后，最小化错判的分值差
+#如果好人的得分高于好人线，或者坏人的得分低于坏人线，则判定为错判
+# 目标函数：min sum(a_i)
+# 约束条件：
+# i = customer, j = category
+# if not default, sum(C_j*X_ij)-a_i <= cutoff_good
+# if default, sum(C_j*X_ij)+a_i >= cutoff_bad
+# for any i, a_i >= 0, for any j, C_j no constraint
 ##############################################################################
+
 
 import sys;
 import os;
-sys.path.append("allinpay projects")
+sys.path.append("allinpay projects/creditscorelinprog")
 from imp import reload
-import creditscore.creditscore
-reload(creditscore.creditscore)
-from creditscore.creditscore import CreditScore
+import creditscore
+reload(creditscore)
+from creditscore import CreditScore
 import numpy as np
 import pandas as pd
 import time
@@ -111,7 +120,7 @@ class CreditScoreLinearProgramming(CreditScore):
 #        var_bound = tuple(var_bound)
         
         result = linprog(opt_coeff, A_ub = res_coeff, b_ub = res_bound , bounds = var_bound,\
-               options={"maxiter": 10000,"disp": True})
+               options={"maxiter": 10000,'tol': 1e-9, "disp": True})
         
 #        return result
 #        print(result.x)

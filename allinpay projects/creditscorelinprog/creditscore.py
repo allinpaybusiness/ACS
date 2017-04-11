@@ -297,6 +297,25 @@ class CreditScore:
         recall = metrics.recall_score(predresult['target'], predresult['predicted'])
         print('precision scores: %s' %precision)
         print('recall scores: %s' %recall)        
+
+        ###AUC KS值
+        auc = metrics.roc_auc_score(predresult.target, predresult.score)
+        print('AUC: %s' %auc)
+
+        ###画出ROC曲线
+        fpr, tpr, _ = metrics.roc_curve(predresult.target, predresult.score)
+        plt.figure()
+        lw = 2
+        plt.plot(fpr, tpr, color='darkorange',
+                 lw=lw, label='ROC curve (area = %0.2f)' % auc)
+        plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver operating characteristic example')
+        plt.legend(loc="lower right")
+        plt.show()
         
     def modelmetrics_scores(self, predresult):
         
@@ -322,6 +341,10 @@ class CreditScore:
             confusion_matrix_prob.iloc[:, 0] = confusion_matrix_prob.iloc[:, 0] / confusion_matrix_prob.iloc[:, 0].sum()
             confusion_matrix_prob.iloc[:, 1] = confusion_matrix_prob.iloc[:, 1] / confusion_matrix_prob.iloc[:, 1].sum()
     
+            print(confusion_matrix)     
+            print(confusion_matrix_prob) 
+
+
             precision = metrics.precision_score(predresult['target'], predresult['predicted'])
             recall = metrics.recall_score(predresult['target'], predresult['predicted'])
             pass_rate = sum(predresult.predicted == 0)/predresult.shape[0]
