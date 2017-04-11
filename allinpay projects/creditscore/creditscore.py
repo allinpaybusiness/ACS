@@ -280,9 +280,9 @@ class CreditScore:
     def preprocessData (self, X_train, X_test, preprocess):
     	    #最小最大值标准化
         if preprocess == "MinMaxScaler":
-        	 scal = preprocessing.MinMaxScaler()
-        	 X_train1 = scal.fit_transform(X_train)
-        	 X_test1 = scal.transform(X_test)
+            scal = preprocessing.MinMaxScaler()
+            X_train1 = scal.fit_transform(X_train)
+            X_test1 = scal.transform(X_test)
         #绝对值最大标准化
         elif preprocess == "MaxAbsScaler":
         	 scal = preprocessing.MaxAbsScaler()
@@ -290,9 +290,9 @@ class CreditScore:
         	 X_test1 = scal.transform(X_test)
         #平均值和标准差
         elif preprocess == "StandardScaler":
-           scal = preprocessing.StandardScaler().fit(X_train)
-           X_train1 = scal.transform(X_train)
-           X_test1 = scal.transform(X_test)
+            scal = preprocessing.StandardScaler().fit(X_train)
+            X_train1 = scal.transform(X_train)
+            X_test1 = scal.transform(X_test)
         elif preprocess == "scale":
             X_train1 = preprocessing.scale(X_train)
             X_test1 = preprocessing.scale(X_test)
