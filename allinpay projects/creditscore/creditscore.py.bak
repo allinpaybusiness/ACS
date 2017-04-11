@@ -277,6 +277,7 @@ class CreditScore:
             
         return X_res, y_res
     
+    #数据预处理,sklearn.Preprocessing中的方法(将数据缩放至一定范围,标准化)
     def preprocessData (self, X_train, X_test, preprocess):
     	    #最小最大值标准化
         if preprocess == "MinMaxScaler":
