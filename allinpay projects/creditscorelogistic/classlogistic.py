@@ -73,7 +73,7 @@ class CreditScoreLogistic(CreditScore):
         #imp  = Imputer(missing_values='NaN', strategy='median', axis=0)
         #最频繁出现的
         #imp  = Imputer(missing_values='NaN', strategy='most_frequent', axis=0)
-        X_test1 = imp.fit_transform(X_test1)
+        X_train1 = imp.fit_transform(X_train1)
         X_test1 = imp.transform(X_test1)
         #数据预处理
         X_train1, X_test1 = self.preprocessData (X_train1, X_test1, preprocess)
@@ -143,7 +143,7 @@ class CreditScoreLogistic(CreditScore):
             #imp  = Imputer(missing_values='NaN', strategy='median', axis=0)
             #最频繁出现的
             #imp  = Imputer(missing_values='NaN', strategy='most_frequent', axis=0)
-            X_test1 = imp.fit_transform(X_test1)
+            X_train1 = imp.fit_transform(X_train1)
             X_test1 = imp.transform(X_test1)
             #数据预处理
             X_train1, X_test1 = self.preprocessData (X_train1, X_test1, preprocess)
