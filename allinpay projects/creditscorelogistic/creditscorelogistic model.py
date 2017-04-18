@@ -70,9 +70,9 @@ resmethod = None
 op = 'liblinear'
 
 #6,数据预处理
-#preprocess = None
+preprocess = None
 #标准化、将数据缩放至给定的最小值与最大值之间
-preprocess = 'MinMaxScaler'
+#preprocess = 'MinMaxScaler'
 #标准化、将最大的绝对值缩放至单位大小
 #preprocess = 'MaxAbsScaler'
 #保存训练集中的参数（均值、方差）直接使用其对象转换测试集数据
@@ -96,6 +96,12 @@ predresult = self.logistic_trainandtest(testsize, cv, feature_sel, varthreshold,
 #K重train and test
 predresult = self.logistic_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
 
+#单次的train and test; bagging
+predresult = self.logistic_bagging_trainandtest(testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
+#K重train and test; bagging
+predresult = self.logistic_bagging_trainandtest_kfold(nsplit, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
+
+
 # 遍历测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
 predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel, cmethod=cmethod)
 # 遍历测试binn,binn从3到100，本方法已包括模型评估，并且保存到文件中
@@ -118,6 +124,6 @@ self.modelmetrics_scores(predresult)
 riskcontrol_cost = 0.01
 lend_rate = 0.18
 borrow_rate = 0.07
-self.maxprofit_p0(predresult, riskcontrol_cost, lend_rate, borrow_rate)
+profit_p0 = self.maxprofit_p0(predresult, riskcontrol_cost, lend_rate, borrow_rate)
 
 
