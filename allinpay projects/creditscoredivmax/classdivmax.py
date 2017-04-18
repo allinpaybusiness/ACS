@@ -116,7 +116,7 @@ def Divergence(list1, list2):
         max_list = max(max(list1),max(list2))
         min_list = min(min(list1),min(list2))
         sample_size = len(list1) + len(list2)
-        num_cat = max(int(sample_size / 5),1)
+        num_cat = max(int(sample_size / 20),1)
 
 
         breakpoints = np.arange(min_list, max_list, (max_list-min_list)/num_cat) 
