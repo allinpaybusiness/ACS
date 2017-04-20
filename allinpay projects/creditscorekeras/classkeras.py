@@ -25,6 +25,7 @@ from keras.layers import Embedding
 from keras.layers import LSTM
 from keras.regularizers import l2
 from keras.optimizers import SGD
+from keras.callbacks import EarlyStopping
 
 
 class CreditScoreKeras(CreditScore):
@@ -45,9 +46,10 @@ class CreditScoreKeras(CreditScore):
         model.add(Activation('sigmoid'))
 
         model.compile(loss='binary_crossentropy', optimizer='rmsprop')
+        early_stopping = EarlyStopping(monitor='val_loss', patience=2)
             
         #训练模型
-        model.fit(X_train.values, y_train.values, epochs=nepoch, batch_size=int(X_train.shape[0]/batches)) 
+        model.fit(X_train.values, y_train.values, epochs=nepoch, batch_size=int(X_train.shape[0]/batches),validation_split=0.2,callbacks=[early_stopping]) 
         
         #预测
         probability = model.predict_proba(X_test.values)
@@ -82,9 +84,11 @@ class CreditScoreKeras(CreditScore):
         model.add(Activation('sigmoid'))
 
         model.compile(loss='binary_crossentropy', optimizer='rmsprop')
+        
+        early_stopping = EarlyStopping(monitor='val_loss', patience=2)
             
         #训练模型
-        model.fit(X_train.values, y_train.values, epochs=nepoch, batch_size=int(X_train.shape[0]/batches)) 
+        model.fit(X_train.values, y_train.values, epochs=nepoch, batch_size=int(X_train.shape[0]/batches),validation_split=0.2,callbacks=[early_stopping]) 
         
         #预测
         probability = model.predict_proba(X_test.values)

@@ -16,9 +16,9 @@ reload(creditscorekeras.classkeras)
 #一，初始化模型数据
 ##############################################################################
 ##############################################################################
-dataname = 'HMEQ'
+#dataname = 'HMEQ'
 #dataname = 'german'
-#dataname = 'taiwancredit'
+dataname = 'taiwancredit'
 kerasmodel = creditscorekeras.classkeras.CreditScoreKeras(dataname)
 self = kerasmodel
 
@@ -29,7 +29,7 @@ self = kerasmodel
 ##############################################################################
 #1,粗分类和woe转换设置
 #粗分类时聚类的数量
-nclusters=10
+nclusters=100
 #粗分类时聚类的方法,kmeans,DBSCAN,Birch，quantile(等分位数划分)，None(等距划分)
 #cmethod = 'equal'
 cmethod = 'quantile'
@@ -64,7 +64,7 @@ resmethod = None
 #resmethod = 'SMOTETomek'
 #5，Keras算法设置
 batches = 100
-nepoch = 10
+nepoch = 1000
 #deepmodel = 'dnn1'
 deepmodel = 'dnn2'
 #6, 是否对变量做pca变换
