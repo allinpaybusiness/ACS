@@ -24,7 +24,7 @@ class CreditScore:
         
         #读取数据集
         if self.dataname == 'german':
-            self.data = pd.read_table('raw data\\credit scoring\\german.data.txt',header=None,delim_whitespace=True)
+            self.data = pd.read_table('..\\..\\raw data\\credit scoring\\german.data.txt',header=None,delim_whitespace=True)
             #重新命名特征变量A1A2A3...和违约变量default
             names = ['A1']
             for i in range(1,self.data.shape[1] - 1):
