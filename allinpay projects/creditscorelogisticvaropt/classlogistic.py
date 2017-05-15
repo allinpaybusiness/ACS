@@ -9,9 +9,9 @@ import sys;
 import os;
 sys.path.append("allinpay projects")
 from imp import reload
-import creditscorelogisticvaropt.creditscore
-reload(creditscorelogisticvaropt.creditscore)
-from creditscorelogisticvaropt.creditscore import CreditScore
+import creditscore
+reload(creditscore)
+from creditscore import CreditScore
 import pandas as pd
 import numpy as np
 import time
@@ -303,6 +303,9 @@ class CreditScoreLogistic(CreditScore):
             print(classifier.coef_[0][i])
         print(classifier.intercept_)
         print ('Coefficients above\n')    
+        
+        predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})        
+        
 
         # 对X_train1中每个变量进行剔除后重新回归，并计算新的LL，比较与完整LL的差值后
         # 剔除对LL影响最小的变量，并对测试数据进行重新预测并与愿预测结果比较
@@ -354,14 +357,14 @@ class CreditScoreLogistic(CreditScore):
             print('Total LL improved ', MinImprovement)
             print('The ', j_exclude_real, ' th character removed')
 
+            probabilityp = classifierp.predict_proba(X_test1_temp)
             
+            predresultp = pd.DataFrame({'target' : y_test, 'probability' : probabilityp[:,1]})        
 
-        probabilityp = classifierp.predict_proba(X_test1_temp)
-
-        
-        predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
-        predresultp = pd.DataFrame({'target' : y_test, 'probability' : probabilityp[:,1]})
-        return predresult, predresultp
+            predresult = predresult.append(predresultp)
+            
+#        predresultp = pd.DataFrame({'target' : y_test, 'probability' : probabilityp[:,1]})
+        return predresult 
     
          
         
