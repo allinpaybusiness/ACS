@@ -8,8 +8,8 @@ This is a temporary script file.
 import sys;
 sys.path.append("allinpay projects")
 from imp import reload
-import creditscorelogisticvaropt.classlogistic
-reload(creditscorelogisticvaropt.classlogistic)
+import classlogistic
+reload(classlogistic)
 
 ##############################################################################
 ##############################################################################
@@ -20,7 +20,7 @@ reload(creditscorelogisticvaropt.classlogistic)
 #dataname = 'HMEQ'
 dataname = 'german'
 #dataname = 'taiwancredit'
-logisticmodel = creditscorelogisticvaropt.classlogistic.CreditScoreLogistic(dataname)
+logisticmodel = classlogistic.CreditScoreLogistic(dataname)
 self = logisticmodel
 
 ##############################################################################
@@ -93,7 +93,7 @@ op = 'liblinear'
 #predresult = self.looplogistic_trainandtest(testsize, cv, feature_sel,cmethod=cmethod)
 #predresult = self.looplogistic_trainandtest_kfold(nsplit, cv, feature_sel,cmethod=cmethod)
 
-predresult, predresultp = self.filterlogistic_trainandtest(testsize, cv, \
+predresult  = self.filterlogistic_trainandtest(testsize, cv, \
                         feature_sel, varthreshold, nclusters, cmethod, resmethod, nvar2exclude)
     
 
@@ -103,8 +103,14 @@ predresult, predresultp = self.filterlogistic_trainandtest(testsize, cv, \
 ##############################################################################
 ##############################################################################
 #对模型总体预测能力的评价：
-self.modelmetrics_scores(predresult)
-self.modelmetrics_scores(predresultp)
+rows_temp = int(predresult.shape[0]/(nvar2exclude+1))
+for i in range(nvar2exclude+1):
+    print(i, ' variables removed')
+    row_start = i*rows_temp
+    row_end = (i+1)*rows_temp
+    predresult_temp = predresult.iloc[row_start:row_end,:]
+    self.modelmetrics_scores(predresult_temp)
+#self.modelmetrics_scores(predresultp)
 #计算最优P0阈值
 #riskcontrol_cost = 0.01
 #lend_rate = 0.18
