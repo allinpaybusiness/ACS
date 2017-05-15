@@ -20,6 +20,7 @@ reload(creditscorelogistic.classlogistic)
 #dataname = 'HMEQ'
 dataname = 'german'
 #dataname = 'taiwancredit'
+#dataname = 'gmsc'
 logisticmodel = creditscorelogistic.classlogistic.CreditScoreLogistic(dataname)
 self = logisticmodel
 

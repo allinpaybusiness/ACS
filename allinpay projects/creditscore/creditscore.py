@@ -66,7 +66,14 @@ class CreditScore:
             self.data['SEX'] = self.data['SEX'].astype('str')
             self.data['EDUCATION'] = self.data['EDUCATION'].astype('str')
             self.data['MARRIAGE'] = self.data['MARRIAGE'].astype('str')
-
+            
+        if self.dataname == 'gmsc':
+            self.data = pd.read_csv('raw data\\credit scoring\\kaggle_gmsc\\cs-training.csv')
+            self.data = self.data.iloc[:,1:self.data.shape[1]]
+            self.data = self.data.rename(columns = {'SeriousDlqin2yrs':'default'})
+            self.data['MonthlyIncome'] = self.data['MonthlyIncome'].fillna(self.data['MonthlyIncome'].mean())
+            self.data['NumberOfDependents'] = self.data['NumberOfDependents'].fillna(self.data['NumberOfDependents'].mean())
+            
     def categoricalwoe(self):
         #进行粗分类和woe转换
         datawoe = self.data.copy()
