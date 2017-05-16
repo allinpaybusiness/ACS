@@ -88,6 +88,7 @@ class CreditScoreLogistic(CreditScore):
         probability = classifier.predict_proba(X_test1)
         
         predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
+        predresult = pd.concat([predresult, X_test], axis = 1)
         
         return predresult
         
@@ -156,6 +157,7 @@ class CreditScoreLogistic(CreditScore):
             probability = classifier.predict_proba(X_test1)
             
             temp = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
+            temp = pd.concat([temp, data_feature.iloc[test_index, ]], axis = 1)
             predresult = pd.concat([predresult, temp], ignore_index = True)        
             
         return predresult
@@ -219,6 +221,7 @@ class CreditScoreLogistic(CreditScore):
         probability = bagging.predict_proba(X_test1)
         
         predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
+        predresult = pd.concat([predresult, X_test], axis = 1)
         
         return predresult
 
@@ -288,6 +291,7 @@ class CreditScoreLogistic(CreditScore):
             probability = bagging.predict_proba(X_test1)
             
             temp = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
+            temp = pd.concat([temp, data_feature.iloc[test_index, ]], axis = 1)
             predresult = pd.concat([predresult, temp], ignore_index = True)        
             
         return predresult

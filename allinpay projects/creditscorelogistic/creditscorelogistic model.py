@@ -126,5 +126,6 @@ riskcontrol_cost = 0.01
 lend_rate = 0.18
 borrow_rate = 0.07
 profit_p0 = self.maxprofit_p0(predresult, riskcontrol_cost, lend_rate, borrow_rate)
-
+#计算哪个特征的哪个分类违约率最低：
+metrics_p = self.pred_feature_analysis(predresult)
 
