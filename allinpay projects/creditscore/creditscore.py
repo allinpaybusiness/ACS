@@ -15,6 +15,7 @@ from sklearn import preprocessing
 import imblearn.under_sampling
 import imblearn.over_sampling
 import imblearn.combine
+import math
 
 class CreditScore:
     
@@ -216,9 +217,13 @@ class CreditScore:
             #对train中数据做woe转换，并对test中数据做相同的转换
             for cat in xtrainunique:
                 #计算单个分类的woe  
-                nob = max(1, sum((y_train == 1) & (X_train[col] == cat)))
+                if math.isnan(cat):
+                    temp = X_train[col].isnull()
+                else:
+                    temp = X_train[col] == cat
+                nob = max(1, sum((y_train == 1) & temp))
                 tnob = sum(y_train == 1)
-                nog = max(1, sum((y_train == 0) & (X_train[col] == cat)))
+                nog = max(1, sum((y_train == 0) & temp))
                 tnog = sum(y_train == 0)
                 woei = np.log((nob/tnob)/(nog/tnog))
                 X_train[col] = X_train[col].replace({cat:woei})
