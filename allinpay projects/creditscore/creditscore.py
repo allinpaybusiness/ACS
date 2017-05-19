@@ -544,17 +544,21 @@ class CreditScore:
         db = pymysql.connect("138.138.81.160","root","123456","bigdatamodeldb",charset='utf8' )
 
         # 使用 cursor() 方法创建一个游标对象 cursor
-        cursor = db.cursor()
+        cursor = db.cursor(cursor=pymysql.cursors.DictCursor)
 
         # 使用 execute()  方法执行 SQL 查询 
         cursor.execute("SELECT * FROM T_POSITION_" + str(table))
         
         df = pd.DataFrame()
         for r in cursor.fetchall():
-            temp =  pd.DataFrame(list(r))
-            temp = temp.transpose()
+            temp =  pd.DataFrame(r, index=[0])
             df = pd.concat([df, temp], ignore_index = True)
-    
+        
+        # 关闭游标
+        cursor.close()
+        # 关闭连接
+        db.close()
+
         return df
     
     
