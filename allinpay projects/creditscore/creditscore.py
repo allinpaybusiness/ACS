@@ -4,7 +4,8 @@ Spyder Editor
 
 This is a temporary script file.
 """
-
+#encoding:utf8
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,6 +17,7 @@ import imblearn.under_sampling
 import imblearn.over_sampling
 import imblearn.combine
 import math
+import pymysql
 
 class CreditScore:
     
@@ -536,3 +538,23 @@ class CreditScore:
         metrics_p = pd.concat([metrics_p0, metrics_p], ignore_index = True)
         
         return metrics_p
+        
+    def data_from_mysql(self, table):
+        # 打开数据库连接
+        db = pymysql.connect("138.138.81.160","root","123456","bigdatamodeldb",charset='utf8' )
+
+        # 使用 cursor() 方法创建一个游标对象 cursor
+        cursor = db.cursor()
+
+        # 使用 execute()  方法执行 SQL 查询 
+        cursor.execute("SELECT * FROM T_POSITION_" + str(table))
+        
+        df = pd.DataFrame()
+        for r in cursor.fetchall():
+            temp =  pd.DataFrame(list(r))
+            temp = temp.transpose()
+            df = pd.concat([df, temp], ignore_index = True)
+    
+        return df
+    
+    
