@@ -547,7 +547,7 @@ class CreditScore:
         cursor = db.cursor(cursor=pymysql.cursors.DictCursor)
 
         # 使用 execute()  方法执行 SQL 查询 
-        cursor.execute("SELECT * FROM T_POSITION_" + str(table))
+        cursor.execute("SELECT * FROM " + str(table))
         
         df = pd.DataFrame()
         for r in cursor.fetchall():
