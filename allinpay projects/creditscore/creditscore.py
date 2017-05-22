@@ -209,20 +209,13 @@ class CreditScore:
                         X_test[col] = X_test[col].astype('object')   
                     
             #woe转换
-            #对test中出现但没在train中出现的值，woe取值为0
             xtrainunique = X_train[col].unique()
             xtestunique = X_test[col].unique()
-            for cat in xtestunique:
-                if not any(xtrainunique == cat):
-                    X_test[col] = X_test[col].replace({cat:0})
-           
+                      
             #对train中数据做woe转换，并对test中数据做相同的转换
             for cat in xtrainunique:
                 #计算单个分类的woe  
-                if math.isnan(cat):
-                    temp = X_train[col].isnull()
-                else:
-                    temp = X_train[col] == cat
+                temp = X_train[col] == cat
                 nob = max(1, sum((y_train == 1) & temp))
                 tnob = sum(y_train == 1)
                 nog = max(1, sum((y_train == 0) & temp))
@@ -231,7 +224,11 @@ class CreditScore:
                 X_train[col] = X_train[col].replace({cat:woei})
                 if any(xtestunique == cat):
                     X_test[col] = X_test[col].replace({cat:woei})
-
+                    
+            #对test中出现但没在train中出现的值，woe取值为0
+            for cat in xtestunique:
+                if not any(xtrainunique == cat):
+                    X_test[col] = X_test[col].replace({cat:0})
                     
         return X_train, X_test
                    
