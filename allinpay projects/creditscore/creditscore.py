@@ -328,9 +328,10 @@ class CreditScore:
                 if not any(xtrainunique == cat):
                     X_test[col] = X_test[col].replace({cat:0})
         
-        binandwoe = [cols, binmodel, woemodel]
-        joblib.dump(binandwoe, 'allinpay projects\\creditscore_TLSW_fyz\\pkl\\binandwoe_' + label + '.pkl')           
-        
+        if label != None:#label==None 用于建模训练，label！=None用于保存生产模型
+            binandwoe = [cols, binmodel, woemodel]
+            joblib.dump(binandwoe, 'allinpay projects\\creditscore_TLSW_fyz\\pkl\\binandwoe_' + label + '.pkl')           
+            
         return X_train, X_test
                    
     def dataencoder(self):
