@@ -8,8 +8,8 @@ This is a temporary script file.
 import sys;
 sys.path.append("allinpay projects")
 from imp import reload
-import creditscore_TLSW_fyz.creditscore_tlsw
-reload(creditscore_TLSW_fyz.creditscore_tlsw)
+import creditscore_TLSW_fyz.creditscore_logistic
+reload(creditscore_TLSW_fyz.creditscore_logistic)
 
 ##############################################################################
 ##############################################################################
@@ -18,7 +18,7 @@ reload(creditscore_TLSW_fyz.creditscore_tlsw)
 ##############################################################################
 
 dataname = 'suanhua'
-tlswmodel = creditscore_TLSW_fyz.creditscore_tlsw.TLSWscoring(dataname)
+tlswmodel = creditscore_TLSW_fyz.creditscore_logistic.TLSWscoring_logistic(dataname)
 self = tlswmodel
 
 ##############################################################################
@@ -125,24 +125,24 @@ metrics_p = self.pred_feature_analysis(predresult)
 import sys;
 sys.path.append("allinpay projects")
 from imp import reload
-import creditscore_TLSW_fyz.creditscore_tlsw
-reload(creditscore_TLSW_fyz.creditscore_tlsw)
+import creditscore_TLSW_fyz.creditscore_logistic
+reload(creditscore_TLSW_fyz.creditscore_logistic)
 
 dataname = 'suanhua'
-tlswmodel = creditscore_TLSW_fyz.creditscore_tlsw.TLSWscoring(dataname)
+tlswmodel = creditscore_TLSW_fyz.creditscore_logistic.TLSWscoring_logistic(dataname)
 self = tlswmodel
 
 cutscore = 600
 nclusters=10
-cmethod = 'quantile'
+cmethod = 'quantile'#暂时只支持quantile 或者equal
 testsize = 0
 nsplit = 5
 feature_sel = 'origin'
 cv = 10
 varthreshold = 0.2
-resmethod = None
+resmethod = None#暂时不支持样本重采样
 op = 'liblinear'
-preprocess = None
+preprocess = None#暂时不支持数据预处理
 label = 'fyz_logistic'
 
 predresult = self.logistic_trainandtest(cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=label)
