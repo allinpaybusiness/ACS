@@ -28,6 +28,7 @@ self = tlswmodel
 ##############################################################################
 #1,粗分类和woe转换设置
 #根据外部分数对好坏客户的分类界限
+unionscores = True
 cutscore = 600
 #粗分类时聚类的数量
 nclusters=10
@@ -92,14 +93,14 @@ preprocess = None
 ##############################################################################
 ##############################################################################
 #单次的train and test
-predresult = self.logistic_trainandtest(cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
+predresult = self.logistic_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
 #K重train and test
-predresult = self.logistic_trainandtest_kfold(nsplit, cutscore, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
+predresult = self.logistic_trainandtest_kfold(unionscores, nsplit, cutscore, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
 
 #单次的train and test; bagging
-predresult = self.logistic_bagging_trainandtest(cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
+predresult = self.logistic_bagging_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
 #K重train and test; bagging
-predresult = self.logistic_bagging_trainandtest_kfold(nsplit, cutscore, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
+predresult = self.logistic_bagging_trainandtest_kfold(unionscores, nsplit, cutscore, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
 
 
 ##############################################################################
@@ -132,6 +133,7 @@ dataname = 'suanhua'
 tlswmodel = creditscore_TLSW_fyz.creditscore_logistic.TLSWscoring_logistic(dataname)
 self = tlswmodel
 
+unionscores = True
 cutscore = 600
 nclusters=10
 cmethod = 'quantile'#暂时只支持quantile 或者equal
@@ -145,7 +147,7 @@ op = 'liblinear'
 preprocess = None#暂时不支持数据预处理
 label = 'fyz_logistic'
 
-predresult = self.logistic_trainandtest(cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=label)
+predresult = self.logistic_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=label)
 
 self.modelmetrics_scores(predresult)
 

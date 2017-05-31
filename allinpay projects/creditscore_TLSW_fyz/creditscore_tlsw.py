@@ -47,16 +47,17 @@ class TLSWscoring(CreditScore):
         data['maritalStatus'] = data['maritalStatus'].astype('object')
         data['education'] = data['education'].astype('object')
         data['age'] = 0
-        data['company'] = data['company'].fillna(0)
-        data['company'] = data['company'].replace({'不详':0})        
-        data['company'] = data['company'].replace({'无':0})
-        data.ix[data['company'] != 0, 'company'] = 1
         
         for i in data.index:
             data.ix[i, 'phone3'] = str(data.ix[i, 'mobileNum'])[0:3]
             data.ix[i, 'age'] = time.localtime().tm_year - int(data.ix[i, 'idCard'][6:10])
             if int(data.ix[i, 'idCard'][(len(data.ix[i, 'idCard'])-2):(len(data.ix[i, 'idCard'])-1)]) % 2 == 0:
                 data.ix[i, 'sexId'] = '2'
+            if data.ix[i, 'company'] in ['NULL', '不详', '无', '无业', '待业人员' ]:   
+                data.ix[i, 'company'] = 0
+            else:
+                data.ix[i, 'company'] = 1
+        
         '''    
         temp3012 = self.data_from_mysql('T_MOBILE_CREDIT_3012')
         temp = temp3012[['idCard', 'mobileNum', 'isUseTime']].copy()

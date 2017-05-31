@@ -29,10 +29,14 @@ from sklearn.externals import joblib
 
 class TLSWscoring_logistic(TLSWscoring):
         
-    def logistic_trainandtest(self, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=None):
+    def logistic_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=None):
 
         #分割数据集为训练集和测试集
-        data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'rsk_score'], axis = 1)
+        if unionscores == True:
+            data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'rsk_score'], axis = 1)
+        else:
+            data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'cst_score',
+                                           'cnp_score', 'cnt_score', 'chv_score', 'dsi_score','rsk_score'], axis = 1)
         data_target = (self.data['rsk_score'] < cutscore).astype('int')
         X_train, X_test, y_train, y_test = train_test_split(data_feature, data_target, test_size=testsize, random_state=0)
         if testsize == 0:
@@ -97,9 +101,13 @@ class TLSWscoring_logistic(TLSWscoring):
             
         return predresult
         
-    def logistic_trainandtest_kfold(self, nsplit, cutscore, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess):
+    def logistic_trainandtest_kfold(self, unionscores, nsplit, cutscore, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess):
 
-        data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'rsk_score'], axis = 1)
+        if unionscores == True:
+            data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'rsk_score'], axis = 1)
+        else:
+            data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'cst_score',
+                                           'cnp_score', 'cnt_score', 'chv_score', 'dsi_score','rsk_score'], axis = 1)
         data_target = (self.data['rsk_score'] < cutscore).astype('int')
 
         #将数据集分割成k个分段分别进行训练和测试，对每个分段，该分段为测试集，其余数据为训练集
@@ -167,10 +175,14 @@ class TLSWscoring_logistic(TLSWscoring):
             
         return predresult
 
-    def logistic_bagging_trainandtest(self, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=None):
+    def logistic_bagging_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=None):
 
         #分割数据集为训练集和测试集
-        data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'rsk_score'], axis = 1)
+        if unionscores == True:
+            data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'rsk_score'], axis = 1)
+        else:
+            data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'cst_score',
+                                           'cnp_score', 'cnt_score', 'chv_score', 'dsi_score','rsk_score'], axis = 1)
         data_target = (self.data['rsk_score'] < cutscore).astype('int')
         X_train, X_test, y_train, y_test = train_test_split(data_feature, data_target, test_size=testsize, random_state=0)
         if testsize == 0:
@@ -236,9 +248,13 @@ class TLSWscoring_logistic(TLSWscoring):
         
         return predresult
 
-    def logistic_bagging_trainandtest_kfold(self, nsplit, cutscore, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess):
+    def logistic_bagging_trainandtest_kfold(self, unionscores, nsplit, cutscore, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess):
 
-        data_feature = self.data.ix[:, self.data.columns != 'default']
+        if unionscores == True:
+            data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'rsk_score'], axis = 1)
+        else:
+            data_feature = self.data.drop(['name', 'idCard', 'mobileNum', 'cardNum', 'cst_score',
+                                           'cnp_score', 'cnt_score', 'chv_score', 'dsi_score','rsk_score'], axis = 1)
         data_target = (self.data['rsk_score'] < cutscore).astype('int') 
 
         #将数据集分割成k个分段分别进行训练和测试，对每个分段，该分段为测试集，其余数据为训练集
