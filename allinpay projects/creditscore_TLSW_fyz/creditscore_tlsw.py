@@ -98,7 +98,7 @@ class TLSWscoring(CreditScore):
         
     def data_analysis(self):
         data = self.data
-        temp = data[data['rsk_score'] < 9990]
+        temp = data[data['rsk_score'] < 9000]
         grouped = temp['rsk_score'].groupby(temp['education'])
         tempmean = pd.DataFrame(grouped.mean())
         tempmean.columns = ['rsk_mean']

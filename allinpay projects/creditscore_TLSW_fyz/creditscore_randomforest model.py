@@ -29,6 +29,7 @@ self = tlswmodel
 ##############################################################################
 #1,粗分类和woe转换设置
 #根据外部分数对好坏客户的分类界限
+unionscores = False
 cutscore = 600
 #粗分类时聚类的数量
 nclusters=10
@@ -77,14 +78,14 @@ rfmethod = 'RandomForest'
 ##############################################################################
 ##############################################################################
 #单次的train and test
-predresult = self.RF_trainandtest(cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod)
+predresult = self.RF_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod)
 #K重train and test
-predresult = self.RF_trainandtest_kfold(nsplit, cutscore, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod)
+predresult = self.RF_trainandtest_kfold(unionscores, nsplit, cutscore, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod)
 
 #单次的train and test：bagging
-predresult = self.RF_trainandtest(cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod)
+predresult = self.RF_bagging_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod)
 #K重train and test：bagging
-predresult = self.RF_trainandtest_kfold(nsplit, cutscore, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod)
+predresult = self.RF_bagging_trainandtest_kfold(unionscores, nsplit, cutscore, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod)
 
 
 
@@ -101,6 +102,45 @@ lend_rate = 0.18
 borrow_rate = 0.07
 profit_p0 = self.maxprofit_p0(predresult, riskcontrol_cost, lend_rate, borrow_rate)
 
+##############################################################################
+##############################################################################
+#五，生产：保存模型，提取模型，输出预测结果
+##############################################################################
+##############################################################################
+import sys;
+sys.path.append("allinpay projects")
+from imp import reload
+import creditscore_TLSW_fyz.creditscore_randomforest
+reload(creditscore_TLSW_fyz.creditscore_randomforest)
+
+dataname = 'suanhua'
+tlswmodel = creditscore_TLSW_fyz.creditscore_randomforest.TLSWscoring_randomforest(dataname)
+self = tlswmodel
+
+unionscores = False
+cutscore = 600
+nclusters=10
+cmethod = 'quantile'#暂时只支持quantile 或者equal
+testsize = 0
+nsplit = 5
+feature_sel = 'origin'
+cv = 10
+varthreshold = 0.2
+resmethod = None#暂时不支持样本重采样
+ntrees = 200
+nodes = 5
+rfmethod = 'RandomForest'
+label = 'fyz_randomforest'
+
+predresult = self.RF_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod, label=label)
+
+self.modelmetrics_scores(predresult)
+
+riskcontrol_cost = 0.01
+lend_rate = 0.18
+borrow_rate = 0.07
+profit_p0 = self.maxprofit_p0(predresult, riskcontrol_cost, lend_rate, borrow_rate)
+metrics_p = self.pred_feature_analysis(predresult)
 
 
 

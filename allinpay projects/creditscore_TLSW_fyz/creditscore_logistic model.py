@@ -28,7 +28,7 @@ self = tlswmodel
 ##############################################################################
 #1,粗分类和woe转换设置
 #根据外部分数对好坏客户的分类界限
-unionscores = True
+unionscores = False
 cutscore = 600
 #粗分类时聚类的数量
 nclusters=10
@@ -120,7 +120,7 @@ metrics_p = self.pred_feature_analysis(predresult)
 
 ##############################################################################
 ##############################################################################
-#四，生产：保存模型，提取模型，输出预测结果
+#五，生产：保存模型，提取模型，输出预测结果
 ##############################################################################
 ##############################################################################
 import sys;
@@ -133,7 +133,7 @@ dataname = 'suanhua'
 tlswmodel = creditscore_TLSW_fyz.creditscore_logistic.TLSWscoring_logistic(dataname)
 self = tlswmodel
 
-unionscores = True
+unionscores = False
 cutscore = 600
 nclusters=10
 cmethod = 'quantile'#暂时只支持quantile 或者equal
