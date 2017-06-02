@@ -13,15 +13,16 @@ reload(creditscore.creditscore)
 from creditscore.creditscore import CreditScore
 import pandas as pd
 import time
-
+from sklearn.externals import joblib
 
 
 
 class TLSWscoring(CreditScore):
     
-    def __init__(self, dataname):
+    def __init__(self, dataname, label=None):
         super(TLSWscoring, self).__init__(dataname)
         self.dataname =  dataname
+        self.label = label
         self.data = self.suanhuadata()
 
     def suanhuadata_raw(self):
@@ -88,12 +89,18 @@ class TLSWscoring(CreditScore):
         temp['rsk_score'] = pd.to_numeric(temp['rsk_score'], errors='coerce')
         data = pd.merge(data, temp)
         
+        fillna_value = pd.DataFrame({'name':'null'}, index=[0])
         for col in data.columns:
             if data[col].dtype == 'O':
-                data[col] = data[col].fillna('NA')
+                data[col] = data[col].fillna('null')
+                fillna_value[col] = 'null'
             else:
                 data[col] = data[col].fillna(data[col].mean())
+                fillna_value[col] = data[col].mean()
         
+        if self.label != None:#label==None 用于建模训练，label！=None用于保存生产模型
+            joblib.dump(fillna_value, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\fillna_value_" + self.label + '.pkl')
+                
         return data
         
     def data_analysis(self):
@@ -107,7 +114,7 @@ class TLSWscoring(CreditScore):
         stat_education = pd.merge(tempmean, tempcount,left_index=True,right_index=True)
         stat_education = stat_education.sort_values(by = ['rsk_mean'], ascending = [0])
         
-        temp = data[data['rsk_score'] < 9990]
+        temp = data[data['rsk_score'] < 9000]
         grouped = temp['rsk_score'].groupby(temp['sexId'])
         tempmean = pd.DataFrame(grouped.mean())
         tempmean.columns = ['rsk_mean']
@@ -116,7 +123,7 @@ class TLSWscoring(CreditScore):
         stat_sex = pd.merge(tempmean, tempcount,left_index=True,right_index=True)
         stat_sex = stat_sex.sort_values(by = ['rsk_mean'], ascending = [0]) 
         
-        temp = data[data['rsk_score'] < 9990]
+        temp = data[data['rsk_score'] < 9000]
         grouped = temp['rsk_score'].groupby(temp['company'])
         tempmean = pd.DataFrame(grouped.mean())
         tempmean.columns = ['rsk_mean']
@@ -125,7 +132,7 @@ class TLSWscoring(CreditScore):
         stat_company = pd.merge(tempmean, tempcount,left_index=True,right_index=True)
         stat_company = stat_company.sort_values(by = ['rsk_mean'], ascending = [0])  
         
-        temp = data[data['rsk_score'] < 9990]
+        temp = data[data['rsk_score'] < 9000]
         grouped = temp['rsk_score'].groupby(temp['maritalStatus'])
         tempmean = pd.DataFrame(grouped.mean())
         tempmean.columns = ['rsk_mean']

@@ -114,7 +114,8 @@ import creditscore_TLSW_fyz.creditscore_randomforest
 reload(creditscore_TLSW_fyz.creditscore_randomforest)
 
 dataname = 'suanhua'
-tlswmodel = creditscore_TLSW_fyz.creditscore_randomforest.TLSWscoring_randomforest(dataname)
+label = 'fyz_randomforest'
+tlswmodel = creditscore_TLSW_fyz.creditscore_randomforest.TLSWscoring_randomforest(dataname, label)
 self = tlswmodel
 
 unionscores = False
@@ -130,9 +131,9 @@ resmethod = None#暂时不支持样本重采样
 ntrees = 200
 nodes = 5
 rfmethod = 'RandomForest'
-label = 'fyz_randomforest'
 
-predresult = self.RF_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod, label=label)
+
+predresult = self.RF_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod)
 
 self.modelmetrics_scores(predresult)
 

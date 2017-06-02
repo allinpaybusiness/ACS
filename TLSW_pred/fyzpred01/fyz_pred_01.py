@@ -36,8 +36,7 @@ def fyz_pred(parameters):
         X_test['company'] = 0
     else:
         X_test['company'] = 1
-    X_test['dsi_score'] = pd.to_numeric(X_test['dsi_score'], errors='coerce')
-    X_test['dsi_score'] = pd.to_numeric(X_test['dsi_score'], errors='coerce')
+
     X_test['MCC_6_var1'] = pd.to_numeric(X_test['MCC_6_var1'], errors='coerce')
     X_test['MON_6_var1'] = pd.to_numeric(X_test['MON_6_var1'], errors='coerce')
     X_test['RFM_6_var1'] = pd.to_numeric(X_test['RFM_6_var1'], errors='coerce')
@@ -49,6 +48,12 @@ def fyz_pred(parameters):
     X_test['RFM_12_var47'] = pd.to_numeric(X_test['RFM_12_var47'], errors='coerce')
     
     X_test = X_test.drop(['idCard', 'mobileNum', 'rsk_score'], axis = 1)
+    
+    ###处理null值
+    fillna_value = joblib.load('TLSW_pred\\fyzpred01\\fillna_value_fyz_logistic.pkl')
+    for col in X_test.columns:
+        if any(fillna_value.columns == col):
+            X_test[col] = X_test[col].fillna(fillna_value.ix[0, col])
     
     ###提取数据预处理模型    
     binandwoe = joblib.load('TLSW_pred\\fyzpred01\\binandwoe_fyz_logistic.pkl')   
@@ -69,8 +74,14 @@ def fyz_pred(parameters):
             X_test[col] = X_test[col].astype('object')
             
         ###woe
-        woecol = woemodel[woemodel['col'] == col]
-        X_test[col] = woecol.ix[woecol['cat'] == X_test.ix[0, col], 'woe']
+        if any(woemodel['col'] == col):
+            woecol = woemodel[woemodel['col'] == col]
+            if any(woecol['cat'] == X_test.ix[0, col]):
+                X_test[col] = woecol.ix[woecol['cat'] == X_test.ix[0, col], 'woe']
+            else:
+                X_test[col] = 0
+        else:
+            X_test[col] = 0
         
     ###提取最终参与建模的列
     testcolumns = joblib.load('TLSW_pred\\fyzpred01\\testcolumns_fyz_logistic.pkl')
@@ -81,7 +92,7 @@ def fyz_pred(parameters):
     probability = classifier.predict_proba(X_test)
     
     ###转换概率至评分
-    riskscore = 300 + probability[0][0] * 700
+    riskscore = str(int(300 + probability[0][0] * 700))
     
     return riskscore
                

@@ -28,7 +28,7 @@ from sklearn.ensemble import BaggingClassifier
 
 class TLSWscoring_randomforest(TLSWscoring):
     
-    def RF_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod, label=None):
+    def RF_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod):
         
         #分割数据集为训练集和测试集
         if unionscores == True:
@@ -42,7 +42,7 @@ class TLSWscoring_randomforest(TLSWscoring):
             X_test, y_test = X_train.head(5), y_train.head(5)
             
         #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-        X_train, X_test = self.binandwoe_traintest_pkl(X_train, y_train, X_test, nclusters, cmethod, label)
+        X_train, X_test = self.binandwoe_traintest_pkl(X_train, y_train, X_test, nclusters, cmethod, self.label)
        
         #在train中做变量筛选, sklearn.feature_selection中的方法
         if feature_sel == "VarianceThreshold":
@@ -89,9 +89,9 @@ class TLSWscoring_randomforest(TLSWscoring):
         predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
         predresult = pd.concat([predresult, X_test], axis = 1)
 
-        if label != None:#label==None 用于建模训练，label！=None用于保存生产模型
-            joblib.dump(classifier, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\classifier_" + label + '.pkl')
-            joblib.dump(testcolumns, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\testcolumns_" + label + '.pkl')
+        if self.label != None:#label==None 用于建模训练，label！=None用于保存生产模型
+            joblib.dump(classifier, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\classifier_" + self.label + '.pkl')
+            joblib.dump(testcolumns, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\testcolumns_" + self.label + '.pkl')
         
         
         return predresult
@@ -165,7 +165,7 @@ class TLSWscoring_randomforest(TLSWscoring):
             
         return predresult
         
-    def RF_bagging_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod, label=None):
+    def RF_bagging_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, ntrees, nodes, rfmethod, nclusters, cmethod, resmethod):
         
         #分割数据集为训练集和测试集
         if unionscores == True:
@@ -179,7 +179,7 @@ class TLSWscoring_randomforest(TLSWscoring):
             X_test, y_test = X_train.head(5), y_train.head(5)
             
         #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-        X_train, X_test = self.binandwoe_traintest_pkl(X_train, y_train, X_test, nclusters, cmethod, label)
+        X_train, X_test = self.binandwoe_traintest_pkl(X_train, y_train, X_test, nclusters, cmethod, self.label)
        
         #在train中做变量筛选, sklearn.feature_selection中的方法
         if feature_sel == "VarianceThreshold":
@@ -227,9 +227,9 @@ class TLSWscoring_randomforest(TLSWscoring):
         predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
         predresult = pd.concat([predresult, X_test], axis = 1)
 
-        if label != None:#label==None 用于建模训练，label！=None用于保存生产模型
-            joblib.dump(baggingclassifier, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\classifier_" + label + '.pkl')
-            joblib.dump(testcolumns, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\testcolumns_" + label + '.pkl')
+        if self.label != None:#label==None 用于建模训练，label！=None用于保存生产模型
+            joblib.dump(baggingclassifier, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\classifier_" + self.label + '.pkl')
+            joblib.dump(testcolumns, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\testcolumns_" + self.label + '.pkl')
         
         
         return predresult

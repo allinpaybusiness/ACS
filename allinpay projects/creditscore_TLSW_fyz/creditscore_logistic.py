@@ -29,7 +29,7 @@ from sklearn.externals import joblib
 
 class TLSWscoring_logistic(TLSWscoring):
         
-    def logistic_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=None):
+    def logistic_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess):
 
         #分割数据集为训练集和测试集
         if unionscores == True:
@@ -43,7 +43,7 @@ class TLSWscoring_logistic(TLSWscoring):
             X_test, y_test = X_train.head(5), y_train.head(5)
             
         #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-        X_train, X_test = self.binandwoe_traintest_pkl(X_train, y_train, X_test, nclusters, cmethod, label)
+        X_train, X_test = self.binandwoe_traintest_pkl(X_train, y_train, X_test, nclusters, cmethod, self.label)
             
         #在train中做变量筛选, sklearn.feature_selection中的方法
         if feature_sel == "VarianceThreshold":
@@ -95,9 +95,9 @@ class TLSWscoring_logistic(TLSWscoring):
         predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
         predresult = pd.concat([predresult, X_test], axis = 1)
         
-        if label != None:#label==None 用于建模训练，label！=None用于保存生产模型
-            joblib.dump(classifier, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\classifier_" + label + '.pkl')
-            joblib.dump(testcolumns, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\testcolumns_" + label + '.pkl')
+        if self.label != None:#label==None 用于建模训练，label！=None用于保存生产模型
+            joblib.dump(classifier, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\classifier_" + self.label + '.pkl')
+            joblib.dump(testcolumns, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\testcolumns_" + self.label + '.pkl')
             
         return predresult
         
@@ -175,7 +175,7 @@ class TLSWscoring_logistic(TLSWscoring):
             
         return predresult
 
-    def logistic_bagging_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=None):
+    def logistic_bagging_trainandtest(self, unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess):
 
         #分割数据集为训练集和测试集
         if unionscores == True:
@@ -189,7 +189,7 @@ class TLSWscoring_logistic(TLSWscoring):
             X_test, y_test = X_train.head(5), y_train.head(5)
             
         #对训练集做变量粗分类和woe转化，并据此对测试集做粗分类和woe转化
-        X_train, X_test = self.binandwoe_traintest(X_train, y_train, X_test, nclusters, cmethod)
+        X_train, X_test = self.binandwoe_traintest_pkl(X_train, y_train, X_test, nclusters, cmethod, self.label)
             
         #在train中做变量筛选, sklearn.feature_selection中的方法
         if feature_sel == "VarianceThreshold":
@@ -242,9 +242,9 @@ class TLSWscoring_logistic(TLSWscoring):
         predresult = pd.DataFrame({'target' : y_test, 'probability' : probability[:,1]})
         predresult = pd.concat([predresult, X_test], axis = 1)
 
-        if label != None:#label==None 用于建模训练，label！=None用于保存生产模型
-            joblib.dump(classifier, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\classifier_" + label + '.pkl')
-            joblib.dump(testcolumns, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\testcolumns_" + label + '.pkl')
+        if self.label != None:#label==None 用于建模训练，label！=None用于保存生产模型
+            joblib.dump(classifier, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\classifier_" + self.label + '.pkl')
+            joblib.dump(testcolumns, "allinpay projects\\creditscore_TLSW_fyz\\pkl\\testcolumns_" + self.label + '.pkl')
         
         return predresult
 

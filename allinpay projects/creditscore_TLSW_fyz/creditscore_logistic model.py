@@ -130,7 +130,8 @@ import creditscore_TLSW_fyz.creditscore_logistic
 reload(creditscore_TLSW_fyz.creditscore_logistic)
 
 dataname = 'suanhua'
-tlswmodel = creditscore_TLSW_fyz.creditscore_logistic.TLSWscoring_logistic(dataname)
+label = 'fyz_logistic'
+tlswmodel = creditscore_TLSW_fyz.creditscore_logistic.TLSWscoring_logistic(dataname, label)
 self = tlswmodel
 
 unionscores = False
@@ -145,9 +146,8 @@ varthreshold = 0.2
 resmethod = None#暂时不支持样本重采样
 op = 'liblinear'
 preprocess = None#暂时不支持数据预处理
-label = 'fyz_logistic'
 
-predresult = self.logistic_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess, label=label)
+predresult = self.logistic_trainandtest(unionscores, cutscore, testsize, cv, feature_sel, varthreshold, nclusters, cmethod, resmethod, preprocess)
 
 self.modelmetrics_scores(predresult)
 
