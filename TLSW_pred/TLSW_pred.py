@@ -18,17 +18,17 @@ for i in range(1, len(sys.argv)):
     parameters.append(sys.argv[i])
 
 #执行相应的模型
-if model == 'fyz_pred_01':    
+if model == 'fyz_pred_00':    
+    from imp import reload
+    import fyz_pred_00
+    reload(fyz_pred_00)
+    rsk_score = fyz_pred_00.fyz_pred(parameters)
+    print(rsk_score)
+elif model == 'fyz_pred_01':
     from imp import reload
     import fyz_pred_01
     reload(fyz_pred_01)
     rsk_score = fyz_pred_01.fyz_pred(parameters)
-    print(rsk_score)
-elif model == 'fyz_pred_02':
-    from imp import reload
-    import fyz_pred_02
-    reload(fyz_pred_02)
-    rsk_score = fyz_pred_02.fyz_pred(parameters)
     print(rsk_score)
     
         

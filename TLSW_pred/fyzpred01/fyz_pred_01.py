@@ -2,7 +2,7 @@
 """
 Spyder Editor
 
-This is a temporary script file.
+生产模型：creditscore_TLSW_fyz.creditscore_logistic
 """
 
 import sys
@@ -26,13 +26,13 @@ def fyz_pred(parameters):
     X_test = pd.DataFrame(parameters, index=[0])
 
     ###建立测试数据dataframe             
-    if int(X_test.ix[0, 'idCard'][(len(X_test.ix[0, 'idCard'])-2):(len(X_test.ix[0, 'idCard'])-1)]) % 2 == 0:
+    if int(X_test.loc[0, 'idCard'][(len(X_test.loc[0, 'idCard'])-2):(len(X_test.loc[0, 'idCard'])-1)]) % 2 == 0:
         X_test['sexId'] = '2' 
     else:
         X_test['sexId'] = '1'
-    X_test['phone3'] = str(X_test.ix[0, 'mobileNum'])[0:3]
-    X_test['age'] = time.localtime().tm_year - int(X_test.ix[0, 'idCard'][6:10])                 
-    if X_test.ix[0, 'company'] in ['NULL', '不详', '无', '无业', '待业人员' ]:   
+    X_test['phone3'] = str(X_test.loc[0, 'mobileNum'])[0:3]
+    X_test['age'] = time.localtime().tm_year - int(X_test.loc[0, 'idCard'][6:10])                 
+    if X_test.loc[0, 'company'] in ['NULL', '不详', '无', '无业', '待业人员' ]:   
         X_test['company'] = 0
     else:
         X_test['company'] = 1
@@ -53,7 +53,7 @@ def fyz_pred(parameters):
     fillna_value = joblib.load('TLSW_pred\\fyzpred01\\fillna_value_fyz_logistic.pkl')
     for col in X_test.columns:
         if any(fillna_value.columns == col):
-            X_test[col] = X_test[col].fillna(fillna_value.ix[0, col])
+            X_test[col] = X_test[col].fillna(fillna_value.loc[0, col])
     
     ###提取数据预处理模型    
     binandwoe = joblib.load('TLSW_pred\\fyzpred01\\binandwoe_fyz_logistic.pkl')   
@@ -65,8 +65,8 @@ def fyz_pred(parameters):
     for col in X_test.columns:
         ###bin
         if col in cols:
-            ix = cols.index(col)
-            breakpoints = binmodel[ix]
+            loc = cols.index(col)
+            breakpoints = binmodel[loc]
             labels = np.arange(len(breakpoints) - 1)
             X_test[col] = pd.cut(X_test[col],bins=breakpoints,right=True,labels=labels,include_lowest=True)
             X_test[col] = X_test[col].astype('object')
@@ -76,8 +76,8 @@ def fyz_pred(parameters):
         ###woe
         if any(woemodel['col'] == col):
             woecol = woemodel[woemodel['col'] == col]
-            if any(woecol['cat'] == X_test.ix[0, col]):
-                X_test[col] = woecol.ix[woecol['cat'] == X_test.ix[0, col], 'woe']
+            if any(woecol['cat'] == X_test.loc[0, col]):
+                X_test[col] = woecol.loc[woecol['cat'] == X_test.loc[0, col], 'woe']
             else:
                 X_test[col] = 0
         else:
